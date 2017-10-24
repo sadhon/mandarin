@@ -16,14 +16,20 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.ExpandabelListAdapter;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -31,6 +37,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,6 +76,82 @@ public class VocabularyList extends AppCompatActivity
 
         /*End Expandable List Code*/
 
+        String[] l1 = getResources().getStringArray(R.array.h1_items);
+        String[] heading_items = getResources().getStringArray(R.array.heading_items);
+
+
+        final List<String> headings = new ArrayList<String>(Arrays.asList(heading_items));
+        final List L1 = new ArrayList<String>(Arrays.asList(l1));
+
+
+
+        final HashMap<String, List<String>> childList  = new HashMap<String, List<String>>();
+
+        for(int i=0; i<headings.size(); i++){
+            childList.put(headings.get(i), new ArrayList<String>());
+
+        }
+
+
+        adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
+
+
+
+        exp_listview.setAdapter(adapter);
+
+        exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
+
+              //  childList.put(headings.get(groupPosition), L1);
+
+
+                String server_url =  "http://192.168.56.1:8080/voc/topic";
+                JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String)null,
+                        new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                List<String> topicList = new ArrayList<String>();
+
+                                try{
+
+                                    for(int i=0;i<response.length();i++){
+                                        // Get current json object
+                                        JSONObject topicObj = response.getJSONObject(i);
+
+                                        // Get the current student (json object) data
+                                        String topic = topicObj.getString("topic");
+                                        topicList.add(topic);
+
+                                    }
+
+                                    childList.put(headings.get(groupPosition), topicList);
+
+                                    Toast.makeText(VocabularyList.this,  topicList +"", Toast.LENGTH_SHORT).show();
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        },
+
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                                Toast.makeText(VocabularyList.this,  error + "", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                );
+
+                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
+
+                return false;
+            }
+        });
+
 
 
 
@@ -92,117 +176,13 @@ public class VocabularyList extends AppCompatActivity
 
 
 
-        getMainVocabularyItems();
+      //  getMainVocabularyItems();
 
 
 
     }
 
 
-
-    public void getMainVocabularyItems(){
-        String server_url = "http://cnpinyin.com/pinyin/API/CnpinyinApiHandler.php";
-
-        JsonObjectRequest jsonOb = new JsonObjectRequest(Request.Method.GET, server_url,(String ) null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-
-                //  mainVocabularyItems = parseJson(response);
-
-
-                Iterator<String> keys = response.keys();
-                //BackgroundTask b = new BackgroundTask(ctx);
-                while (keys.hasNext()){
-
-
-
-                    String key = (String) keys.next();
-                    String value = response.optString(key);
-
-
-
-                    mainVocabularyItems.add(value);
-                    Toast.makeText(getApplicationContext(), ""+ mainVocabularyItems.size(), Toast.LENGTH_SHORT).show();
-                }
-
-
-                //-----------------------------------------
-
-
-                String[] l1 = getResources().getStringArray(R.array.h1_items);
-                String[] l2 = getResources().getStringArray(R.array.h2_items);
-                String[] l3 = getResources().getStringArray(R.array.h3_items);
-
-                List<String> headings = mainVocabularyItems;
-                List L1 = new ArrayList<String>(Arrays.asList(l1));
-                List L2 = new ArrayList<String>(Arrays.asList(l2));
-                List L3 = new ArrayList<String>(Arrays.asList(l3));
-
-
-                HashMap<String, List<String>> childList  = new HashMap<String, List<String>>();
-
-                childList.put(headings.get(0), L1);
-                childList.put(headings.get(1), L2);
-                childList.put(headings.get(2), L3);
-
-
-                adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
-                exp_listview.setAdapter(adapter);
-
-
-                //Item Event Click Control here:
-
-                controlItemClickEvent();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "Error occurs....", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonOb);
-    }
-
-
-
-    public void controlItemClickEvent(){
-        exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                //Toast.makeText(Vocabulary.this, headings.get(groupPosition) + "is expanded..", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        exp_listview.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-
-                //Toast.makeText(Vocabulary.this, headings.get(groupPosition) + " is collasped..", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-
-        exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-
-                String itemName = (String) adapter.getChild(groupPosition, childPosition);
-                //   Toast.makeText(Vocabulary.this, itemName +  " is clicked...", Toast.LENGTH_SHORT).show();
-
-
-                startActivity(new Intent(VocabularyList.this, NewActivity.class));
-
-
-                return true;
-            }
-        });
-
-    }
 
     @Override
     public void onBackPressed() {
