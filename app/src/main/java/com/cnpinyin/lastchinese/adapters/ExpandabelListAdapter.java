@@ -29,40 +29,66 @@ public class ExpandabelListAdapter extends BaseExpandableListAdapter {
         this.ctx = ctx;
     }
 
+
+
     @Override
     public int getGroupCount() {
         return header_titles.size();
     }
+
+
+
 
     @Override
     public int getChildrenCount(int groupPosition) {
         return child_titles.get(header_titles.get(groupPosition)).size();
     }
 
+
+
+
     @Override
     public Object getGroup(int groupPosition) {
         return header_titles.get(groupPosition);
     }
+
+
+
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
         return child_titles.get(header_titles.get(groupPosition)).get(childPosition);
     }
 
+
+
+
     @Override
     public long getGroupId(int groupPosition) {
         return groupPosition;
     }
+
+
+
+
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
         return childPosition;
     }
 
+
+
+
+
     @Override
     public boolean hasStableIds() {
         return false;
     }
+
+
+
+
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
@@ -79,6 +105,8 @@ public class ExpandabelListAdapter extends BaseExpandableListAdapter {
 
         return convertView;
     }
+
+
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {

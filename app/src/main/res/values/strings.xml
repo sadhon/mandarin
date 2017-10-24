@@ -6,7 +6,7 @@
 
     <string name="action_settings">Settings</string>
 
-    <string-array name="heading_item">
+    <string-array name="heading_items">
         <item>By Topics Part3 + Image</item>
         <item>By Topics Part3 + Image</item>
         <item> By Topics Part 1</item>
@@ -27,19 +27,8 @@
         <item>Romantic 5</item>
     </string-array>
 
-    <string-array name="h2_items">
-        <item>Horror 1 </item>
-        <item>Horror 2</item>
-        <item>Horror 3</item>
-        <item>Horror 4</item>
-    </string-array>
 
-
-    <string-array name="h3_items">
-        <item>hindi 1</item>
-        <item>hindi 2</item>
-        <item>hindi 3</item>
-        <item>hindi 4</item>
-    </string-array>
+    <string name="title_activity_tabed">TabedActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 </resources>

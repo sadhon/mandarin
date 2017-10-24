@@ -35,8 +35,8 @@ public class BackgroundTask {
             @Override
             public void onResponse(JSONObject response) {
 
-                Toast.makeText(ctx, "" + response, Toast.LENGTH_SHORT).show();
-                Toast.makeText(ctx, ""+ response, Toast.LENGTH_SHORT).show();
+/*                Toast.makeText(ctx, "" + response, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, ""+ response, Toast.LENGTH_SHORT).show();*/
 
                 Iterator<String> keys = response.keys();
                 //BackgroundTask b = new BackgroundTask(ctx);
