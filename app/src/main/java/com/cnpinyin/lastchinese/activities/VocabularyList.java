@@ -7,13 +7,16 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -31,6 +34,7 @@ import com.cnpinyin.lastchinese.singleton.MySingleton;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,107 +56,101 @@ public class VocabularyList extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vocabulary_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        exp_listview = (ExpandableListView) findViewById(R.id.expnadable_listview);
+
+        //toolbar setting
         setSupportActionBar(toolbar);
 
-
-
-        /*FOR DATABASE DATA*/
-
-
-
-        /*END DATABASE DATA*/
-
-
-
-
-
-        /*Expandable List View*/
-
-    exp_listview = (ExpandableListView) findViewById(R.id.expnadable_listview);
-
-
-
-
-
-        /*End Expandable List Code*/
-
-        String[] l1 = getResources().getStringArray(R.array.h1_items);
+        //Vocbulary Main Items example: topic , lesson etc
         String[] heading_items = getResources().getStringArray(R.array.heading_items);
 
-
+        //Converting array into arrayList
         final List<String> headings = new ArrayList<String>(Arrays.asList(heading_items));
-        final List L1 = new ArrayList<String>(Arrays.asList(l1));
 
+        //Sub Item List under Main Item. example: conversatoin, verb etc under topic
+        final HashMap<String, List<String>> childList = new HashMap<String, List<String>>();
 
-
-        final HashMap<String, List<String>> childList  = new HashMap<String, List<String>>();
-
-        for(int i=0; i<headings.size(); i++){
+        //Firstly set sub itemList empyt coz data will load dynamically from server
+        for (int i = 0; i < headings.size(); i++) {
             childList.put(headings.get(i), new ArrayList<String>());
-
         }
 
-
+        //provided here Main Item List , hashmap of child Item List and applicationContext
         adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
 
-
-
+        //initial setAdapter for ExpandableListView here
         exp_listview.setAdapter(adapter);
+
 
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
 
-              //  childList.put(headings.get(groupPosition), L1);
+                //  childList.put(headings.get(groupPosition), L1);
+
+                if(parent.isGroupExpanded(groupPosition)){
+                    exp_listview.collapseGroup(groupPosition);
+                }else {
+
+                    String server_url = "http://192.168.43.167:8080/voc/topic";
+                    JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                            new Response.Listener<JSONArray>() {
+                                @Override
+                                public void onResponse(JSONArray response) {
+
+                                    List<String> topicList = new ArrayList<String>();
+
+                                    try {
+                                        for (int i = 0; i < response.length(); i++) {
+                                            // Get current json object
+                                            JSONObject topicObj = response.getJSONObject(i);
+
+                                            // Get the current student (json object) data
+                                            String topic = topicObj.getString("topic");
+                                            topicList.add(topic);
+
+                                        }
+
+                                        childList.put(headings.get(groupPosition), topicList);
+
+                                        adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
+
+                                        exp_listview.setAdapter(adapter);
+                                        exp_listview.expandGroup(groupPosition);
 
 
-                String server_url =  "http://192.168.56.1:8080/voc/topic";
-                JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String)null,
-                        new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(JSONArray response) {
-                                List<String> topicList = new ArrayList<String>();
+                                        exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                                            @Override
+                                            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 
-                                try{
+                                                Toast.makeText(VocabularyList.this, childList.get(headings.get(groupPosition)).get(childPosition) + " ", Toast.LENGTH_SHORT).show();
+                                                return false;
+                                            }
+                                        });
 
-                                    for(int i=0;i<response.length();i++){
-                                        // Get current json object
-                                        JSONObject topicObj = response.getJSONObject(i);
 
-                                        // Get the current student (json object) data
-                                        String topic = topicObj.getString("topic");
-                                        topicList.add(topic);
-
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
 
-                                    childList.put(headings.get(groupPosition), topicList);
-
-                                    Toast.makeText(VocabularyList.this,  topicList +"", Toast.LENGTH_SHORT).show();
-
-                                }catch (Exception e){
-                                    e.printStackTrace();
                                 }
+                            },
 
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+
+                                    Toast.makeText(VocabularyList.this, error + "", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        },
 
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
+                    );
 
-                                Toast.makeText(VocabularyList.this,  error + "", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                );
-
-                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
-
-                return false;
+                    MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
+                }
+                return true;
             }
         });
-
-
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -174,14 +172,10 @@ public class VocabularyList extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
-
-      //  getMainVocabularyItems();
-
+        //  getMainVocabularyItems();
 
 
     }
-
 
 
     @Override

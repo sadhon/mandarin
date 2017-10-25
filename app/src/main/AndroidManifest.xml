@@ -22,15 +22,11 @@
         <activity
             android:name=".activities.VocabularyList"
             android:label="Vocabulary List"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activities.TabedActivity"
             android:label="@string/title_activity_tabed"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

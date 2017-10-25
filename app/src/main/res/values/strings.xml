@@ -26,6 +26,13 @@
         <item>Romantic 4</item>
         <item>Romantic 5</item>
     </string-array>
+    <string-array name="h2_items">
+        <item>Horror 1</item>
+        <item>Horror 2</item>
+        <item>Horror 3</item>
+        <item>Horror 4</item>
+        <item>Horror 5</item>
+    </string-array>
 
 
     <string name="title_activity_tabed">TabedActivity</string>
