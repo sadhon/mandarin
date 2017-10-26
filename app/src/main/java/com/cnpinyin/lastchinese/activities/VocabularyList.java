@@ -7,42 +7,30 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.ExpandabelListAdapter;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -99,6 +87,7 @@ public class VocabularyList extends AppCompatActivity
                                 public void onResponse(JSONArray response) {
 
                                     List<String> topicList = new ArrayList<String>();
+                                    final List<Integer> sizeList = new ArrayList<>();
 
                                     try {
                                         for (int i = 0; i < response.length(); i++) {
@@ -107,7 +96,10 @@ public class VocabularyList extends AppCompatActivity
 
                                             // Get the current student (json object) data
                                             String topic = topicObj.getString("topic");
+                                            int size = topicObj.getInt("size");
+
                                             topicList.add(topic);
+                                            sizeList.add(size);
 
                                         }
 
@@ -123,7 +115,19 @@ public class VocabularyList extends AppCompatActivity
                                             @Override
                                             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 
-                                                Toast.makeText(VocabularyList.this, childList.get(headings.get(groupPosition)).get(childPosition) + " ", Toast.LENGTH_SHORT).show();
+                                                int size = sizeList.get(childPosition);
+                                                String topic =  childList.get(headings.get(groupPosition))
+                                                        .get(childPosition);
+
+                                                Intent intent = new Intent(getApplicationContext(),
+                                                        ViewPagerSlider.class);
+
+                                                intent.putExtra("topic",topic);
+                                                intent.putExtra("size", size);
+
+                                                startActivity(intent);
+
+                                                Toast.makeText(VocabularyList.this, "Topic name : " + childList.get(headings.get(groupPosition)).get(childPosition) + " Size is : " + sizeList.get(childPosition), Toast.LENGTH_SHORT).show();
                                                 return false;
                                             }
                                         });

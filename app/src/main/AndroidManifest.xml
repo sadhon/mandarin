@@ -24,7 +24,7 @@
             android:label="Vocabulary List"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".activities.TabedActivity"
+            android:name=".activities.ViewPagerSlider"
             android:label="@string/title_activity_tabed"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
