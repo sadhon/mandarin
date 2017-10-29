@@ -19,14 +19,14 @@
 
 
     <string-array name="names">
-        <item> By Topics Part 1</item>
-        <item> By Topics Part 2</item>
-        <item> By Topics Part3 + Image</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
         <item> By Level</item>
         <item> By Lesson</item>
         <item> By HSK</item>
         <item> By BCT</item>
-        <item> Single Character List</item>
+        <item> Single </item>
     </string-array>
 
 
