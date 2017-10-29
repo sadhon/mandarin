@@ -127,7 +127,7 @@ public class VocabularyList extends AppCompatActivity
 
                                                 startActivity(intent);
 
-                                                Toast.makeText(VocabularyList.this, "Topic name : " + childList.get(headings.get(groupPosition)).get(childPosition) + " Size is : " + sizeList.get(childPosition), Toast.LENGTH_SHORT).show();
+                                         /*       Toast.makeText(VocabularyList.this, "Topic name : " + childList.get(headings.get(groupPosition)).get(childPosition) + " Size is : " + sizeList.get(childPosition), Toast.LENGTH_SHORT).show();*/
                                                 return false;
                                             }
                                         });

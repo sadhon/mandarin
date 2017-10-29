@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
+import com.cnpinyin.lastchinese.extras.PageContent;
 
 import java.util.ArrayList;
 
@@ -40,6 +41,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
     Toolbar toolbar;
     private Spinner spinner;
     Button prev, next;
+    ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
 
 
 
@@ -60,6 +62,16 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         Intent intent = getIntent();
         String topic = intent.getStringExtra("topic");
         int size = intent.getIntExtra("size", 0);
+
+
+        String[] names = getResources().getStringArray(R.array.names);
+        for(String name: names){
+            PageContent pageContent = new PageContent(name);
+            pageContents.add(pageContent);
+        }
+
+
+
 
 
         topic = topic.substring(0, 1).toUpperCase() + topic.substring(1);
@@ -117,7 +129,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         });
 
 
-        customSwipeAdapter = new CustomSwipeAdapter(this, size);
+        customSwipeAdapter = new CustomSwipeAdapter(this, size, pageContents);
         mViewPager.setAdapter(customSwipeAdapter);
 
 

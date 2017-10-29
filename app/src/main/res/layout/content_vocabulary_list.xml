@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.cnpinyin.lastchinese.activities.VocabularyList"
-    tools:showIn="@layout/app_bar_vocabulary_list">
+    tools:showIn="@layout/app_bar_vocabulary_list"
+    android:orientation="vertical">
+
+
+    <android.support.v7.widget.SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Search Here"
+        android:layout_margin="20dp"
+        android:background="#e2e0e2">
+
+    </android.support.v7.widget.SearchView>
+
+
 
 
     <ExpandableListView
@@ -19,4 +32,4 @@
 
     </ExpandableListView>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

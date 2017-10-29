@@ -7,32 +7,29 @@
     <string name="action_settings">Settings</string>
 
     <string-array name="heading_items">
-        <item>By Topics Part3 + Image</item>
-        <item>By Topics Part3 + Image</item>
         <item> By Topics Part 1</item>
-        <item> By Level</item>
-        <item>By Lesson</item>
         <item> By Topics Part 2</item>
+        <item> By Topics Part3 + Image</item>
+        <item> By Level</item>
+        <item> By Lesson</item>
         <item> By HSK</item>
         <item> By BCT</item>
         <item> Single Character List</item>
     </string-array>
 
 
-    <string-array name="h1_items">
-        <item>Romantic 1</item>
-        <item>Romantic 2</item>
-        <item>Romantic 3</item>
-        <item>Romantic 4</item>
-        <item>Romantic 5</item>
+    <string-array name="names">
+        <item> By Topics Part 1</item>
+        <item> By Topics Part 2</item>
+        <item> By Topics Part3 + Image</item>
+        <item> By Level</item>
+        <item> By Lesson</item>
+        <item> By HSK</item>
+        <item> By BCT</item>
+        <item> Single Character List</item>
     </string-array>
-    <string-array name="h2_items">
-        <item>Horror 1</item>
-        <item>Horror 2</item>
-        <item>Horror 3</item>
-        <item>Horror 4</item>
-        <item>Horror 5</item>
-    </string-array>
+
+
 
 
     <string name="title_activity_tabed">TabedActivity</string>
