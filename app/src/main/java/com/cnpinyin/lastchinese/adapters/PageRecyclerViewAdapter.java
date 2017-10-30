@@ -37,7 +37,11 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
     public void onBindViewHolder(PageViewHolder holder, int position) {
 
         PageContent content = pageContents.get(position);
-        holder.page_text.setText(content.getName());
+
+        holder.page_text.setText("排");
+        holder.translation.setText(content.getEngword());
+        holder.pinyin.setText(content.getCnpinyin());
+
 
         Log.e("Position", position + " ");
 
@@ -50,11 +54,14 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
     }
 
     public static class PageViewHolder extends RecyclerView.ViewHolder{
-        TextView page_text;
+        TextView page_text, translation, pinyin;
 
         public PageViewHolder(View itemView) {
             super(itemView);
             page_text = (TextView) itemView.findViewById(R.id.page_txt);
+            pinyin = (TextView) itemView.findViewById(R.id.pinyin_txt);
+            translation = (TextView) itemView.findViewById(R.id.translation);
+
 
         }
     }

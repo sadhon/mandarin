@@ -56,13 +56,6 @@ public class VocabularyList extends AppCompatActivity
 
         //Hasmap for dynamically getting url endpoint
 
-                /*
-        <item> By Topics Part 2</item>
-        <item> By Topics Part3 + Image</item>
-        <item> By BCT</item>
-        <item> Single Character List</item>
-  */
-
         final HashMap<String, String> map = new HashMap<>();
 
         map.put("By Topics Part 1", "topic");
@@ -71,7 +64,7 @@ public class VocabularyList extends AppCompatActivity
         map.put("By Level", "level");
         map.put("By Lesson", "lesson");
         map.put("By HSK", "hsk");
-        map.put("By BCT", "lesson");
+        map.put("By BCT", "bct");
         map.put("Single Character List", "lesson");
 
 
@@ -99,6 +92,20 @@ public class VocabularyList extends AppCompatActivity
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
+
+                /*when enpoint is "bct" then no need to show child directly go to the content page */
+
+                if(map.get(headings.get(groupPosition)).equals("bct")){
+                    Intent intent = new Intent(getApplicationContext(),
+                            ViewPagerSlider.class);
+
+                    intent.putExtra("pageTitle", "BCT");
+                    intent.putExtra("contentSize", 1035);
+
+                    startActivity(intent);
+                }
+
+
 
                 //  childList.put(headings.get(groupPosition), L1);
 
@@ -171,8 +178,8 @@ public class VocabularyList extends AppCompatActivity
                                                 Intent intent = new Intent(getApplicationContext(),
                                                         ViewPagerSlider.class);
 
-                                                intent.putExtra("topic", childValue);
-                                                intent.putExtra("size", childSize);
+                                                intent.putExtra("pageTitle", childValue);
+                                                intent.putExtra("contentSize", childSize);
 
                                                 startActivity(intent);
 

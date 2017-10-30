@@ -6,18 +6,29 @@ package com.cnpinyin.lastchinese.extras;
 
 public class PageContent {
 
-    private String name;
+    private String cnpinyin;
+    private String engword;
 
-    public PageContent(String name){
-        this.setName(name);
+    public PageContent(String cnpinyin, String engword){
+
+        this.setCnpinyin(cnpinyin);
+        this.setEngword(engword);
 
     }
 
-    public String getName() {
-        return name;
+    public String getCnpinyin() {
+        return cnpinyin;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCnpinyin(String cnpinyin) {
+        this.cnpinyin = cnpinyin;
+    }
+
+    public String getEngword() {
+        return engword;
+    }
+
+    public void setEngword(String engword) {
+        this.engword = engword;
     }
 }

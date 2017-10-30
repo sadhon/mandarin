@@ -26,11 +26,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
 import com.cnpinyin.lastchinese.extras.PageContent;
+import com.cnpinyin.lastchinese.singleton.MySingleton;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ViewPagerSlider extends AppCompatActivity implements View.OnClickListener{
@@ -41,7 +53,8 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
     Toolbar toolbar;
     private Spinner spinner;
     Button prev, next;
-    ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
+    private int size;
+
 
 
 
@@ -60,21 +73,23 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String topic = intent.getStringExtra("topic");
-        int size = intent.getIntExtra("size", 0);
+        String topic = intent.getStringExtra("pageTitle");
+        size = intent.getIntExtra("contentSize", 0);
 
 
+/*
         String[] names = getResources().getStringArray(R.array.names);
         for(String name: names){
             PageContent pageContent = new PageContent(name);
             pageContents.add(pageContent);
         }
+*/
 
 
 
 
 
-        topic = topic.substring(0, 1).toUpperCase() + topic.substring(1);
+        topic = topic.toUpperCase();
         getSupportActionBar().setTitle(topic);
 
 
@@ -88,25 +103,51 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         int high = 0;
         String range = "";
 
-        for (int i = 1; i < size; i++) {
+        if(topic.equalsIgnoreCase("bct")){
 
-            high = min + 19;
-            if (size < high) {
-                high = size;
+            for (int i = 1; i < size; i++) {
+
+                high = min + 49;
+                if (size < high) {
+                    high = size;
+                }
+
+                range = "Range ( " + min + "-" + high + " )";
+                ranges.add(range);
+
+                if (high == size) {
+                    break;
+                }
+
+                min = high + 1;
+
+
             }
-            Log.e("range", min + " - " + high);
 
-            range = "Range ( " + min + "-" + high + " )";
-            ranges.add(range);
 
-            if (high == size) {
-                break;
+        }else{
+            for (int i = 1; i < size; i++) {
+
+                high = min + 19;
+                if (size < high) {
+                    high = size;
+                }
+
+                range = "Range ( " + min + "-" + high + " )";
+                ranges.add(range);
+
+                if (high == size) {
+                    break;
+                }
+
+                min = high + 1;
+
+
             }
-
-            min = high + 1;
-
 
         }
+
+
 
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(ViewPagerSlider.this, R.layout.custom_spinner_layout, ranges);
@@ -119,7 +160,78 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                Toast.makeText(ViewPagerSlider.this, spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+
+                //finding min value of selected range..
+                String s = spinner.getSelectedItem().toString();
+                Matcher matcher = Pattern.compile("\\d+").matcher(s);
+                matcher.find();
+                int min = Integer.valueOf(matcher.group());
+
+                //determining page index
+
+                int index = (min-1) / 20;
+
+              //  Log.e("index", index+"");
+
+                String server_url = "http://192.168.43.167:8080/voc/topic/conversation?page=0";
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, server_url, (String) null,
+
+                        new Response.Listener<JSONObject>() {
+
+                            ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
+                            @Override
+                            public void onResponse(JSONObject response) {
+
+                                try {
+                                    JSONArray jsonArray = response.getJSONArray("content");
+
+                                    for(int i = 0; i<jsonArray.length(); i++){
+                                        JSONObject contentObj = jsonArray.getJSONObject(i);
+
+                                        //String character = contentObj.getString("char");
+
+
+                                        String pinyin = contentObj.getString("pinyin");
+                                        String engword = contentObj.getString("engword");
+
+
+                                        PageContent pageContent = new PageContent(pinyin, engword);
+                                        pageContents.add(pageContent);
+
+
+                                        customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, size, pageContents);
+                                        mViewPager.setAdapter(customSwipeAdapter);
+
+
+                                    }
+
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+
+
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(ViewPagerSlider.this, error + "", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+
+                );
+
+                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+
+
+
+
+
+
             }
 
             @Override
@@ -129,9 +241,9 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         });
 
 
-        customSwipeAdapter = new CustomSwipeAdapter(this, size, pageContents);
+      /*  customSwipeAdapter = new CustomSwipeAdapter(this, size, pageContents);
         mViewPager.setAdapter(customSwipeAdapter);
-
+*/
 
     }
 
