@@ -105,6 +105,7 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("contentSize", 1035);
 
                     startActivity(intent);
+                    finish();
                 }
 
 

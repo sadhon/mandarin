@@ -84,7 +84,10 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         int high = 0;
         String range = "";
 
-        if (child.equalsIgnoreCase("bct")) {
+
+        if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") ) {
+
+
 
             for (int i = 1; i < size; i++) {
 
@@ -150,17 +153,27 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
                 int index = (min - 1) / 20;
 
-                //  Log.e("index", index+"");
+                if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") ){
+                    index = (min - 1) / 50;
+                }
 
 
+                //URL space is replaced by "%20
                 String cleanChild = child.replaceAll(" ", "%20");
-                cleanChild = cleanChild.replaceAll("/", "%2F");
 
+                //normal range difference 20
                 String server_url = AllConstans.SERVER_URL + parentEndPoint + "/" + cleanChild + "?page=" + index;
 
 
-                Log.e("url", server_url);
+                //for range differenge 50
+                if ( parentEndPoint.equalsIgnoreCase("hsk") ){
+                    server_url += "&size=50";
+                }else if(parentEndPoint.equalsIgnoreCase("bct")){
+                    server_url = AllConstans.SERVER_URL + parentEndPoint + "?page=" + index + "&size=50";
+                }
 
+
+                //Server data request
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, server_url, (String) null,
 
@@ -185,6 +198,10 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                             cnchar = contentObj.getString("hskw_char");
                                             pinyin = contentObj.getString("hskw_pinyin");
                                             engword = contentObj.getString("hskw_eng");
+                                        }else if(parentEndPoint.equalsIgnoreCase("bct")){
+                                            cnchar = contentObj.getString("bct_char");
+                                            pinyin = contentObj.getString("bct_pinyin");
+                                            engword = contentObj.getString("bct_eng");
                                         } else {
                                             cnchar = contentObj.getString("cnchar");
                                             pinyin = contentObj.getString("pinyin");
