@@ -2,9 +2,7 @@ package com.cnpinyin.lastchinese.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.ExpandabelListAdapter;
+import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
 import org.json.JSONArray;
@@ -33,7 +32,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -95,10 +93,14 @@ public class VocabularyList extends AppCompatActivity
 
                 /*when enpoint is "bct" then no need to show child directly go to the content page */
 
-                if(map.get(headings.get(groupPosition)).equals("bct")){
+
+                final String parentEndPoint = map.get(headings.get(groupPosition));
+
+                if(parentEndPoint.equals("bct")){
                     Intent intent = new Intent(getApplicationContext(),
                             ViewPagerSlider.class);
 
+                    intent.putExtra("parentEndPoint", parentEndPoint);
                     intent.putExtra("pageTitle", "BCT");
                     intent.putExtra("contentSize", 1035);
 
@@ -113,9 +115,9 @@ public class VocabularyList extends AppCompatActivity
                     exp_listview.collapseGroup(groupPosition);
                 } else {
 
-                    String server_url = "http://192.168.43.167:8080/voc/" + map.get(headings.get(groupPosition));
+                    String server_url = AllConstans.SERVER_URL + parentEndPoint;
 
-                    Log.e("map", map.get(headings.get(groupPosition)));
+                    Log.e("parent1", parentEndPoint);
 
 
                     JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
@@ -129,6 +131,8 @@ public class VocabularyList extends AppCompatActivity
 
 
                                     try {
+
+                                        String parent = parentEndPoint;
 
                                         //Determining dynamically keys from the first object
 
@@ -178,12 +182,14 @@ public class VocabularyList extends AppCompatActivity
                                                 Intent intent = new Intent(getApplicationContext(),
                                                         ViewPagerSlider.class);
 
+
+
+                                                intent.putExtra("parentEndPoint", parentEndPoint);
                                                 intent.putExtra("pageTitle", childValue);
                                                 intent.putExtra("contentSize", childSize);
 
                                                 startActivity(intent);
 
-                                         /*       Toast.makeText(VocabularyList.this, "Topic name : " + childList.get(headings.get(groupPosition)).get(childPosition) + " Size is : " + sizeList.get(childPosition), Toast.LENGTH_SHORT).show();*/
                                                 return false;
                                             }
                                         });

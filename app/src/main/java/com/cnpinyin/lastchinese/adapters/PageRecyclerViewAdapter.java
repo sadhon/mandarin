@@ -38,7 +38,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
         PageContent content = pageContents.get(position);
 
-        holder.page_text.setText("排");
+        holder.page_text.setText(content.getCnchar());
         holder.translation.setText(content.getEngword());
         holder.pinyin.setText(content.getCnpinyin());
 

@@ -8,12 +8,25 @@ public class PageContent {
 
     private String cnpinyin;
     private String engword;
+    private String cnchar;
 
-    public PageContent(String cnpinyin, String engword){
+
+    public PageContent(String cnpinyin, String engword, String cnchar){
 
         this.setCnpinyin(cnpinyin);
         this.setEngword(engword);
+        this.setCnchar(cnchar);
 
+
+    }
+
+    public String getCnchar() {
+        return cnchar;
+    }
+
+
+    public void setCnchar(String cnchar) {
+        this.cnchar = cnchar;
     }
 
     public String getCnpinyin() {

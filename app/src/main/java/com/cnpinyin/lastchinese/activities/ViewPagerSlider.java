@@ -1,29 +1,17 @@
 package com.cnpinyin.lastchinese.activities;
 
 import android.content.Intent;
-import android.support.constraint.solver.ArrayLinkedVariables;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -32,20 +20,22 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
+import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.PageContent;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class ViewPagerSlider extends AppCompatActivity implements View.OnClickListener{
+public class ViewPagerSlider extends AppCompatActivity implements View.OnClickListener {
 
 
     private android.support.v4.view.ViewPager mViewPager;
@@ -54,8 +44,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
     private Spinner spinner;
     Button prev, next;
     private int size;
-
-
 
 
     ArrayList<String> ranges = new ArrayList<String>();
@@ -73,25 +61,18 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String topic = intent.getStringExtra("pageTitle");
+
+        final String child = intent.getStringExtra("pageTitle");
+        final String parentEndPoint = intent.getStringExtra("parentEndPoint");
+
+
         size = intent.getIntExtra("contentSize", 0);
 
-
-/*
-        String[] names = getResources().getStringArray(R.array.names);
-        for(String name: names){
-            PageContent pageContent = new PageContent(name);
-            pageContents.add(pageContent);
-        }
-*/
+        // Log.e("endpoint", parentEndPoint);
 
 
-
-
-
-        topic = topic.toUpperCase();
-        getSupportActionBar().setTitle(topic);
-
+        // child = child.toUpperCase();
+        getSupportActionBar().setTitle(child);
 
 
         next.setOnClickListener(this);
@@ -103,7 +84,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         int high = 0;
         String range = "";
 
-        if(topic.equalsIgnoreCase("bct")){
+        if (child.equalsIgnoreCase("bct")) {
 
             for (int i = 1; i < size; i++) {
 
@@ -125,7 +106,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
             }
 
 
-        }else{
+        } else {
             for (int i = 1; i < size; i++) {
 
                 high = min + 19;
@@ -148,8 +129,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         }
 
 
-
-
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(ViewPagerSlider.this, R.layout.custom_spinner_layout, ranges);
 
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -169,44 +148,56 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
                 //determining page index
 
-                int index = (min-1) / 20;
+                int index = (min - 1) / 20;
 
-              //  Log.e("index", index+"");
+                //  Log.e("index", index+"");
 
-                String server_url = "http://192.168.43.167:8080/voc/topic/conversation?page=0";
+
+                String cleanChild = child.replaceAll(" ", "%20");
+                cleanChild = cleanChild.replaceAll("/", "%2F");
+
+                String server_url = AllConstans.SERVER_URL + parentEndPoint + "/" + cleanChild + "?page=" + index;
+
+
+                Log.e("url", server_url);
+
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, server_url, (String) null,
 
                         new Response.Listener<JSONObject>() {
 
                             ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
+
                             @Override
                             public void onResponse(JSONObject response) {
 
                                 try {
                                     JSONArray jsonArray = response.getJSONArray("content");
 
-                                    for(int i = 0; i<jsonArray.length(); i++){
+                                    String cnchar;
+                                    String pinyin;
+                                    String engword;
+                                    for (int i = 0; i < jsonArray.length(); i++) {
                                         JSONObject contentObj = jsonArray.getJSONObject(i);
 
-                                        //String character = contentObj.getString("char");
 
+                                        if (parentEndPoint.equalsIgnoreCase("hsk")) {
+                                            cnchar = contentObj.getString("hskw_char");
+                                            pinyin = contentObj.getString("hskw_pinyin");
+                                            engword = contentObj.getString("hskw_eng");
+                                        } else {
+                                            cnchar = contentObj.getString("cnchar");
+                                            pinyin = contentObj.getString("pinyin");
+                                            engword = contentObj.getString("engword");
 
-                                        String pinyin = contentObj.getString("pinyin");
-                                        String engword = contentObj.getString("engword");
+                                        }
 
-
-                                        PageContent pageContent = new PageContent(pinyin, engword);
+                                        PageContent pageContent = new PageContent(pinyin, engword, cnchar);
                                         pageContents.add(pageContent);
-
 
                                         customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, size, pageContents);
                                         mViewPager.setAdapter(customSwipeAdapter);
-
-
                                     }
-
-
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -221,16 +212,9 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                 Toast.makeText(ViewPagerSlider.this, error + "", Toast.LENGTH_SHORT).show();
                             }
                         }
-
-
                 );
 
                 MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-
-
-
-
-
 
             }
 
@@ -239,11 +223,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-
-
-      /*  customSwipeAdapter = new CustomSwipeAdapter(this, size, pageContents);
-        mViewPager.setAdapter(customSwipeAdapter);
-*/
 
     }
 
@@ -254,9 +233,9 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         String s = b.getText().toString();
         int currentPage = mViewPager.getCurrentItem();
 
-        if(s.equals("prev")){
+        if (s.equals("prev")) {
             mViewPager.setCurrentItem(currentPage - 1, true);
-        }else {
+        } else {
             mViewPager.setCurrentItem(currentPage + 1, true);
         }
 
