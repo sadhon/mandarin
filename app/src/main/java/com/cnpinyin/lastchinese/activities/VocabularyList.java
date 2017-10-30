@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +31,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,6 +41,7 @@ public class VocabularyList extends AppCompatActivity
     ExpandableListView exp_listview;
     ExpandabelListAdapter adapter;
     ArrayList<String> mainVocabularyItems = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,28 @@ public class VocabularyList extends AppCompatActivity
 
         //toolbar setting
         setSupportActionBar(toolbar);
+
+
+        //Hasmap for dynamically getting url endpoint
+
+                /*
+        <item> By Topics Part 2</item>
+        <item> By Topics Part3 + Image</item>
+        <item> By BCT</item>
+        <item> Single Character List</item>
+  */
+
+        final HashMap<String, String> map = new HashMap<>();
+
+        map.put("By Topics Part 1", "topic");
+        map.put("By Topics Part 2", "lesson");
+        map.put("By Topics Part3 + Image", "lesson");
+        map.put("By Level", "level");
+        map.put("By Lesson", "lesson");
+        map.put("By HSK", "hsk");
+        map.put("By BCT", "lesson");
+        map.put("Single Character List", "lesson");
+
 
         //Vocbulary Main Items example: topic , lesson etc
         String[] heading_items = getResources().getStringArray(R.array.heading_items);
@@ -76,37 +102,60 @@ public class VocabularyList extends AppCompatActivity
 
                 //  childList.put(headings.get(groupPosition), L1);
 
-                if(parent.isGroupExpanded(groupPosition)){
+                if (parent.isGroupExpanded(groupPosition)) {
                     exp_listview.collapseGroup(groupPosition);
-                }else {
+                } else {
 
-                    String server_url = "http://192.168.43.167:8080/voc/topic";
+                    String server_url = "http://192.168.43.167:8080/voc/" + map.get(headings.get(groupPosition));
+
+                    Log.e("map", map.get(headings.get(groupPosition)));
+
+
                     JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                             new Response.Listener<JSONArray>() {
                                 @Override
                                 public void onResponse(JSONArray response) {
 
-                                    List<String> topicList = new ArrayList<String>();
-                                    final List<Integer> sizeList = new ArrayList<>();
+                                    List<String> childValueList = new ArrayList<String>();
+                                    final List<Integer> childSizeList = new ArrayList<>();
+                                    List<String> keysList = new ArrayList<String>();
+
 
                                     try {
+
+                                        //Determining dynamically keys from the first object
+
+                                        JSONObject firstJSONObject = response.getJSONObject(0);
+                                        Iterator keysIterator = firstJSONObject.keys();
+
+                                        while (keysIterator.hasNext()) {
+                                            String key = (String) keysIterator.next();
+                                            keysList.add(key);
+                                        }
+
+                                        //Determining child values and sizes using the above keys
+
                                         for (int i = 0; i < response.length(); i++) {
                                             // Get current json object
-                                            JSONObject topicObj = response.getJSONObject(i);
+                                            JSONObject singleObj = response.getJSONObject(i);
 
-                                            // Get the current student (json object) data
-                                            String topic = topicObj.getString("topic");
-                                            int size = topicObj.getInt("size");
+                                            // Determining  single child value and size
+                                            String childValue = singleObj.getString(keysList.get(0));
+                                            int childSizeValue = singleObj.getInt(keysList.get(1));
 
-                                            topicList.add(topic);
-                                            sizeList.add(size);
+                                            //adding single child value and size in respective List
+                                            childValueList.add(childValue);
+                                            childSizeList.add(childSizeValue);
 
                                         }
 
-                                        childList.put(headings.get(groupPosition), topicList);
+                                        //Adding child value list against each parent
+                                        childList.put(headings.get(groupPosition), childValueList);
 
+                                        //Initializing ExpandableListAdapter..
                                         adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
 
+                                        //Setting adapter with expandable list view
                                         exp_listview.setAdapter(adapter);
                                         exp_listview.expandGroup(groupPosition);
 
@@ -115,15 +164,15 @@ public class VocabularyList extends AppCompatActivity
                                             @Override
                                             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 
-                                                int size = sizeList.get(childPosition);
-                                                String topic =  childList.get(headings.get(groupPosition))
+                                                int childSize = childSizeList.get(childPosition);
+                                                String childValue = childList.get(headings.get(groupPosition))
                                                         .get(childPosition);
 
                                                 Intent intent = new Intent(getApplicationContext(),
                                                         ViewPagerSlider.class);
 
-                                                intent.putExtra("topic",topic);
-                                                intent.putExtra("size", size);
+                                                intent.putExtra("topic", childValue);
+                                                intent.putExtra("size", childSize);
 
                                                 startActivity(intent);
 
@@ -157,15 +206,9 @@ public class VocabularyList extends AppCompatActivity
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
+
+        //This is Navigation portion
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -174,9 +217,6 @@ public class VocabularyList extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        //  getMainVocabularyItems();
 
 
     }
