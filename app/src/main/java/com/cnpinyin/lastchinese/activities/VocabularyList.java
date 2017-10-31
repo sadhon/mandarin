@@ -96,7 +96,7 @@ public class VocabularyList extends AppCompatActivity
 
                 final String parentEndPoint = map.get(headings.get(groupPosition));
 
-                if(parentEndPoint.equals("bct")){
+                if (parentEndPoint.equals("bct")) {
                     Intent intent = new Intent(getApplicationContext(),
                             ViewPagerSlider.class);
 
@@ -105,121 +105,121 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("contentSize", 1035);
 
                     startActivity(intent);
-                    finish();
-                }
+                } else {
 
+                    if (parent.isGroupExpanded(groupPosition)) {
+                        exp_listview.collapseGroup(groupPosition);
+                    } else {
+
+                        String server_url = AllConstans.SERVER_URL + parentEndPoint;
+
+                        Log.e("parent1", parentEndPoint);
+
+
+                        JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                                new Response.Listener<JSONArray>() {
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+
+                                        List<String> childValueList = new ArrayList<String>();
+                                        final List<Integer> childSizeList = new ArrayList<>();
+                                        List<String> keysList = new ArrayList<String>();
+
+
+                                        try {
+
+                                            String parent = parentEndPoint;
+
+                                            //Determining dynamically keys from the first object
+
+                                            JSONObject firstJSONObject = response.getJSONObject(0);
+                                            Iterator keysIterator = firstJSONObject.keys();
+
+                                            while (keysIterator.hasNext()) {
+                                                String key = (String) keysIterator.next();
+                                                keysList.add(key);
+                                            }
+
+                                            //Determining child values and sizes using the above keys
+
+                                            for (int i = 0; i < response.length(); i++) {
+                                                // Get current json object
+                                                JSONObject singleObj = response.getJSONObject(i);
+
+                                                // Determining  single child value and size
+                                                String childValue = singleObj.getString(keysList.get(0));
+                                                int childSizeValue = singleObj.getInt(keysList.get(1));
+
+                                                //adding single child value and size in respective List
+                                                childValueList.add(childValue);
+                                                childSizeList.add(childSizeValue);
+
+                                            }
+
+                                            //Adding child value list against each parent
+                                            childList.put(headings.get(groupPosition), childValueList);
+
+                                            //Initializing ExpandableListAdapter..
+                                            adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
+
+                                            //Setting adapter with expandable list view
+                                            exp_listview.setAdapter(adapter);
+                                            exp_listview.expandGroup(groupPosition);
+
+
+                                            exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                                                @Override
+                                                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+
+                                                    int childSize = childSizeList.get(childPosition);
+                                                    String childValue = childList.get(headings.get(groupPosition))
+                                                            .get(childPosition);
+
+                                                    Intent intent = new Intent(getApplicationContext(),
+                                                            ViewPagerSlider.class);
+
+
+                                                    intent.putExtra("parentEndPoint", parentEndPoint);
+                                                    intent.putExtra("pageTitle", childValue);
+                                                    intent.putExtra("contentSize", childSize);
+
+                                                    startActivity(intent);
+
+                                                    return false;
+                                                }
+                                            });
+
+
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                },
+
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+
+                                        Toast.makeText(VocabularyList.this, error + "", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                        );
+
+                        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
+                    }
+
+
+                }
 
 
                 //  childList.put(headings.get(groupPosition), L1);
 
-                if (parent.isGroupExpanded(groupPosition)) {
-                    exp_listview.collapseGroup(groupPosition);
-                } else {
 
-                    String server_url = AllConstans.SERVER_URL + parentEndPoint;
-
-                    Log.e("parent1", parentEndPoint);
-
-
-                    JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
-
-                                    List<String> childValueList = new ArrayList<String>();
-                                    final List<Integer> childSizeList = new ArrayList<>();
-                                    List<String> keysList = new ArrayList<String>();
-
-
-                                    try {
-
-                                        String parent = parentEndPoint;
-
-                                        //Determining dynamically keys from the first object
-
-                                        JSONObject firstJSONObject = response.getJSONObject(0);
-                                        Iterator keysIterator = firstJSONObject.keys();
-
-                                        while (keysIterator.hasNext()) {
-                                            String key = (String) keysIterator.next();
-                                            keysList.add(key);
-                                        }
-
-                                        //Determining child values and sizes using the above keys
-
-                                        for (int i = 0; i < response.length(); i++) {
-                                            // Get current json object
-                                            JSONObject singleObj = response.getJSONObject(i);
-
-                                            // Determining  single child value and size
-                                            String childValue = singleObj.getString(keysList.get(0));
-                                            int childSizeValue = singleObj.getInt(keysList.get(1));
-
-                                            //adding single child value and size in respective List
-                                            childValueList.add(childValue);
-                                            childSizeList.add(childSizeValue);
-
-                                        }
-
-                                        //Adding child value list against each parent
-                                        childList.put(headings.get(groupPosition), childValueList);
-
-                                        //Initializing ExpandableListAdapter..
-                                        adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
-
-                                        //Setting adapter with expandable list view
-                                        exp_listview.setAdapter(adapter);
-                                        exp_listview.expandGroup(groupPosition);
-
-
-                                        exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                                            @Override
-                                            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-
-                                                int childSize = childSizeList.get(childPosition);
-                                                String childValue = childList.get(headings.get(groupPosition))
-                                                        .get(childPosition);
-
-                                                Intent intent = new Intent(getApplicationContext(),
-                                                        ViewPagerSlider.class);
-
-
-
-                                                intent.putExtra("parentEndPoint", parentEndPoint);
-                                                intent.putExtra("pageTitle", childValue);
-                                                intent.putExtra("contentSize", childSize);
-
-                                                startActivity(intent);
-
-                                                return false;
-                                            }
-                                        });
-
-
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            },
-
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-
-                                    Toast.makeText(VocabularyList.this, error + "", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                    );
-
-                    MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
-                }
                 return true;
             }
         });
-
-
 
 
         //This is Navigation portion
