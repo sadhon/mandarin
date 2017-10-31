@@ -20,7 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.cnpinyin.lastchinese.R;
-import com.cnpinyin.lastchinese.adapters.ExpandabelListAdapter;
+import com.cnpinyin.lastchinese.adapters.ExpandableListAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
@@ -37,7 +37,7 @@ public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ExpandableListView exp_listview;
-    ExpandabelListAdapter adapter;
+    ExpandableListAdapter adapter;
     ArrayList<String> mainVocabularyItems = new ArrayList<>();
 
 
@@ -75,23 +75,24 @@ public class VocabularyList extends AppCompatActivity
         //Sub Item List under Main Item. example: conversatoin, verb etc under topic
         final HashMap<String, List<String>> childList = new HashMap<String, List<String>>();
 
-        //Firstly set sub itemList empyt coz data will load dynamically from server
+        //Firstly set sub itemList empty coz data will load dynamically from server
         for (int i = 0; i < headings.size(); i++) {
             childList.put(headings.get(i), new ArrayList<String>());
         }
 
         //provided here Main Item List , hashmap of child Item List and applicationContext
-        adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
+        adapter = new ExpandableListAdapter(headings, childList, getApplicationContext());
 
         //initial setAdapter for ExpandableListView here
         exp_listview.setAdapter(adapter);
+
+        //Here group click listener will be inseted..
 
 
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
-
-                /*when enpoint is "bct" then no need to show child directly go to the content page */
+                 /*when enpoint is "bct" then no need to show child directly go to the content page */
 
 
                 final String parentEndPoint = map.get(headings.get(groupPosition));
@@ -126,9 +127,9 @@ public class VocabularyList extends AppCompatActivity
                                         List<String> keysList = new ArrayList<String>();
 
 
+
                                         try {
 
-                                            String parent = parentEndPoint;
 
                                             //Determining dynamically keys from the first object
 
@@ -138,17 +139,30 @@ public class VocabularyList extends AppCompatActivity
                                             while (keysIterator.hasNext()) {
                                                 String key = (String) keysIterator.next();
                                                 keysList.add(key);
+
                                             }
 
                                             //Determining child values and sizes using the above keys
+
+                                            String childValue;
+                                            int childSizeValue;
 
                                             for (int i = 0; i < response.length(); i++) {
                                                 // Get current json object
                                                 JSONObject singleObj = response.getJSONObject(i);
 
                                                 // Determining  single child value and size
-                                                String childValue = singleObj.getString(keysList.get(0));
-                                                int childSizeValue = singleObj.getInt(keysList.get(1));
+
+
+                                                //as Sometime it doesn't get keys serially so this solution
+
+                                                if(keysList.get(0).equalsIgnoreCase("size")){
+                                                    childValue = singleObj.getString(keysList.get(1));
+                                                    childSizeValue = singleObj.getInt(keysList.get(0));
+                                                }else {
+                                                    childValue = singleObj.getString(keysList.get(0));
+                                                    childSizeValue = singleObj.getInt(keysList.get(1));
+                                                }
 
                                                 //adding single child value and size in respective List
                                                 childValueList.add(childValue);
@@ -159,8 +173,8 @@ public class VocabularyList extends AppCompatActivity
                                             //Adding child value list against each parent
                                             childList.put(headings.get(groupPosition), childValueList);
 
-                                            //Initializing ExpandableListAdapter..
-                                            adapter = new ExpandabelListAdapter(headings, childList, getApplicationContext());
+                                            //Update ExpandableListAdapter..
+                                            adapter.update(childList);
 
                                             //Setting adapter with expandable list view
                                             exp_listview.setAdapter(adapter);
@@ -213,11 +227,7 @@ public class VocabularyList extends AppCompatActivity
 
                 }
 
-
-                //  childList.put(headings.get(groupPosition), L1);
-
-
-                return true;
+                return false;
             }
         });
 

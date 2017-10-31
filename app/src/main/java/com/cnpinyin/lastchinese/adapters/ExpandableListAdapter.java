@@ -17,18 +17,21 @@ import java.util.List;
  * Created by inspiron on 8/24/2017.
  */
 
-public class ExpandabelListAdapter extends BaseExpandableListAdapter {
+public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private List<String> header_titles;
     private HashMap<String, List<String>> child_titles;
     private Context ctx;
 
-    public ExpandabelListAdapter(List<String> header_titles, HashMap<String, List<String>> child_titles, Context ctx) {
+    public ExpandableListAdapter(List<String> header_titles, HashMap<String, List<String>> child_titles, Context ctx) {
         this.header_titles = header_titles;
         this.child_titles = child_titles;
         this.ctx = ctx;
     }
 
+    public void update(HashMap<String, List<String>> child_titles){
+        this.child_titles = child_titles;
+    }
 
 
     @Override
