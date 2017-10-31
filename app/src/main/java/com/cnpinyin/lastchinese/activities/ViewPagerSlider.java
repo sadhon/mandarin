@@ -1,6 +1,7 @@
 package com.cnpinyin.lastchinese.activities;
 
 import android.content.Intent;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -28,8 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -104,8 +103,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 }
 
                 min = high + 1;
-
-
             }
 
 
@@ -125,8 +122,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 }
 
                 min = high + 1;
-
-
             }
 
         }
@@ -147,15 +142,18 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 String s = spinner.getSelectedItem().toString();
                 Matcher matcher = Pattern.compile("\\d+").matcher(s);
                 matcher.find();
+
                 int min = Integer.valueOf(matcher.group());
 
                 //determining page index
-
                 int index = (min - 1) / 20;
 
                 if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") ){
                     index = (min - 1) / 50;
                 }
+
+
+                final int currentPageIndex = index;
 
 
                 //URL space is replaced by "%20
@@ -165,12 +163,14 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 String server_url = AllConstans.SERVER_URL + parentEndPoint + "/" + cleanChild + "?page=" + index;
 
 
-                //for range differenge 50
+                //for range difference 50
                 if ( parentEndPoint.equalsIgnoreCase("hsk") ){
                     server_url += "&size=50";
                 }else if(parentEndPoint.equalsIgnoreCase("bct")){
                     server_url = AllConstans.SERVER_URL + parentEndPoint + "?page=" + index + "&size=50";
                 }
+
+
 
 
                 //Server data request
@@ -212,8 +212,17 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                         PageContent pageContent = new PageContent(pinyin, engword, cnchar);
                                         pageContents.add(pageContent);
 
-                                        customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, size, pageContents);
+                                        customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, ranges.size(), pageContents);
                                         mViewPager.setAdapter(customSwipeAdapter);
+
+                                        //set Current page
+                                        mViewPager.setCurrentItem(currentPageIndex, true);
+                                        //mViewPager.disableScroll(true);
+
+
+                                        pageChangeListener();
+
+
                                     }
 
                                 } catch (JSONException e) {
@@ -243,6 +252,13 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
     }
 
+
+    public void  pageChangeListener(){
+
+    }
+
+
+
     @Override
     public void onClick(View v) {
 
@@ -251,9 +267,24 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         int currentPage = mViewPager.getCurrentItem();
 
         if (s.equals("prev")) {
-            mViewPager.setCurrentItem(currentPage - 1, true);
+
+            int prevIndex = spinner.getSelectedItemPosition()-1;
+            if (prevIndex >= 0){
+                spinner.setSelection(prevIndex);
+                mViewPager.setCurrentItem(currentPage - 1, true);
+              //  b.setVisibility(view.Visi);
+            }
+
+
         } else {
-            mViewPager.setCurrentItem(currentPage + 1, true);
+
+
+            int nextIndex = spinner.getSelectedItemPosition()+1;
+            if (nextIndex < ranges.size()){
+                spinner.setSelection(nextIndex);
+                mViewPager.setCurrentItem(currentPage + 1, true);
+            }
+
         }
 
 

@@ -38,7 +38,6 @@ public class VocabularyList extends AppCompatActivity
 
     ExpandableListView exp_listview;
     ExpandableListAdapter adapter;
-    ArrayList<String> mainVocabularyItems = new ArrayList<>();
 
 
     @Override
@@ -114,7 +113,7 @@ public class VocabularyList extends AppCompatActivity
 
                         String server_url = AllConstans.SERVER_URL + parentEndPoint;
 
-                        Log.e("parent1", parentEndPoint);
+                       // Log.e("parent1", parentEndPoint);
 
 
                         JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,

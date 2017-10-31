@@ -43,13 +43,13 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
         holder.pinyin.setText(content.getCnpinyin());
 
 
-        Log.e("Position", position + " ");
+      //  Log.e("Position", position + " ");
 
     }
 
     @Override
     public int getItemCount() {
-        Log.e("size", pageContents.size()+ "");
+       // Log.e("size", pageContents.size()+ "");
         return pageContents.size();
     }
 

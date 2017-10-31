@@ -23,9 +23,9 @@ import java.util.ArrayList;
 
 public class CustomSwipeAdapter extends PagerAdapter {
 
-    Context ctx;
+    private Context ctx;
     private int size ;
-    ArrayList<PageContent> contents;
+    private ArrayList<PageContent> contents;
 
 
     public CustomSwipeAdapter(Context ctx, int size, ArrayList<PageContent> contents) {
@@ -34,9 +34,6 @@ public class CustomSwipeAdapter extends PagerAdapter {
         this.size = size;
         this.contents = contents;
 
-/*
-        Toast.makeText(ctx, "Hello from heere and size : " + size, Toast.LENGTH_SHORT).show();
-*/
     }
 
     @Override
@@ -60,9 +57,7 @@ public class CustomSwipeAdapter extends PagerAdapter {
 
         PageRecyclerViewAdapter pageRecyclerViewAdapter = new PageRecyclerViewAdapter(contents);
         recyclerView.setAdapter(pageRecyclerViewAdapter);
-
         container.addView(item_view);
-
 
         return item_view;
     }
@@ -70,7 +65,7 @@ public class CustomSwipeAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-
         container.removeView((LinearLayout) object);
     }
+
 }
