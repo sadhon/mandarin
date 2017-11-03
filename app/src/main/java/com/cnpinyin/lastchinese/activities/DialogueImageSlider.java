@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -23,9 +24,10 @@ import java.util.ArrayList;
 
 public class DialogueImageSlider extends AppCompatActivity {
 
-
     ImageView imageView;
     Button prev, next;
+    TextView cross;
+
 
     private int index = 0;
 
@@ -37,9 +39,10 @@ public class DialogueImageSlider extends AppCompatActivity {
         setContentView(R.layout.activity_image_slider);
 
 
+        cross =  (TextView) findViewById(R.id.btn_cross);
         imageView = (ImageView) findViewById(R.id.image_slider);
-        prev = (Button) findViewById(R.id.prev);
-        next= (Button) findViewById(R.id.next);
+        prev = (Button) findViewById(R.id.btn_prev);
+        next= (Button) findViewById(R.id.btn_next);
 
 
         final Intent intent = getIntent();
@@ -51,20 +54,41 @@ public class DialogueImageSlider extends AppCompatActivity {
         }
 
 
+        if(cnchars.size() == 1){
+            prev.setVisibility(View.GONE);
+            next.setVisibility(View.GONE);
+        }else{
+            prev.setVisibility(View.GONE);
+            next.setVisibility(View.VISIBLE);
+        }
+
+        cross.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
         Glide.with(DialogueImageSlider.this).asGif().load("http://cnpinyin.com/pinyin/PYT/ch-gif/all-files-1.1/"+cnchars.get(index)+".gif").into(imageView);
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
-
                 index -=1;
+                next.setVisibility(View.VISIBLE);
+
+                if(index==0){
+                    prev.setVisibility(View.GONE);
+                }
+
                 if(index>=0){
 
                     Glide.with(DialogueImageSlider.this).asGif().load("http://cnpinyin.com/pinyin/PYT/ch-gif/all-files-1.1/"+cnchars.get(index)+".gif").into(imageView);
                 }else {
                     index = 0;
+
                 }
 
             }
@@ -75,8 +99,17 @@ public class DialogueImageSlider extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                 index+=1;
+
+                prev.setVisibility(View.VISIBLE);
+
+
+                if(index == cnchars.size()-1)
+                {
+                    next.setVisibility(View.GONE);
+                }
+
+
                 if(index<cnchars.size()){
 
                     Glide.with(DialogueImageSlider.this).asGif().load("http://cnpinyin.com/pinyin/PYT/ch-gif/all-files-1.1/"+cnchars.get(index)+".gif").into(imageView);

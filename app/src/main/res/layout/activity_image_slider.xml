@@ -1,50 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#eaeae8"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:layout_gravity="center_horizontal"
-    tools:context="com.cnpinyin.lastchinese.activities.DialogueImageSlider">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-
-    <ImageView
-        android:id="@+id/image_slider"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/cnpinyin_logo"
-        />
-
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        tools:context="com.cnpinyin.lastchinese.activities.DialogueImageSlider">
+
+
+
+
+        <ImageView
+            android:id="@+id/image_slider"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/cnpinyin_logo" />
+
+
+        <TextView
+            android:alpha="0.7"
+            android:id="@+id/btn_cross"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/rounded_corner"
+            android:gravity="center"
+            android:text="X"
+            android:textColor="#fff"
+            android:textSize="16sp"
+            android:typeface="normal" />
 
         <Button
-
-            android:id="@+id/prev"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="prev"/>
+            android:id="@+id/btn_prev"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="150dp"
+            android:alpha="0.5"
+            android:gravity="center"
+            android:background="#000"
+            android:text="@string/prev"
+            android:textColor="#FFF"
+            android:textSize="20sp" />
 
         <Button
-            android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="next"/>
-
-    </LinearLayout>
-
-
-
-<!--    <android.support.v4.view.ViewPager
-        android:id="@+id/popup_image_slider_container"
-        android:layout_width="400dp"
-        android:layout_height="400dp">
-
-    </android.support.v4.view.ViewPager>-->
-
-</LinearLayout>
+            android:id="@+id/btn_next"
+            android:layout_width="30dp"
+            android:gravity="center"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="150dp"
+            android:alpha="0.5"
+            android:background="#000"
+            android:text="@string/next"
+            android:textColor="#FFF"
+            android:textSize="20sp" />
+    </RelativeLayout>
+</ScrollView>

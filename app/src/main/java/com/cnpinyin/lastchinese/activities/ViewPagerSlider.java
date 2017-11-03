@@ -137,7 +137,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(ViewPagerSlider.this, R.layout.custom_spinner_layout, ranges);
 
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
 
         spinner.setAdapter(spinnerAdapter);
 
