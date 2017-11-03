@@ -18,21 +18,44 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <Spinner
 
-                android:id="@+id/spinner"
-                android:layout_width="wrap_content"
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:orientation="horizontal">
 
-                />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/toolbar_title"
+                    android:textSize="20dp"
+                    android:text="hello"
+                    android:textColor="#000"
+                    />
+
+                <Spinner
+
+                    android:id="@+id/spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+
+
+                    />
+
+
+            </LinearLayout>
+
 
         </android.support.v7.widget.Toolbar>
 
@@ -58,7 +81,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="15dp"
+        android:layout_margin="0dp"
         />
 
     <Button
@@ -69,7 +92,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="15dp"
+        android:layout_margin="0dp"
         />
 
 </RelativeLayout>

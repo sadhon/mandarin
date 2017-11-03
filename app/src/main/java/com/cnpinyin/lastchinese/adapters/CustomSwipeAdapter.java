@@ -55,7 +55,7 @@ public class CustomSwipeAdapter extends PagerAdapter {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ctx);
         recyclerView.setLayoutManager(layoutManager);
 
-        PageRecyclerViewAdapter pageRecyclerViewAdapter = new PageRecyclerViewAdapter(contents);
+        PageRecyclerViewAdapter pageRecyclerViewAdapter = new PageRecyclerViewAdapter(ctx, contents);
         recyclerView.setAdapter(pageRecyclerViewAdapter);
         container.addView(item_view);
 

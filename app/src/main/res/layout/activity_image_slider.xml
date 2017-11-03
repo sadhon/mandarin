@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eaeae8"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    tools:context="com.cnpinyin.lastchinese.activities.DialogueImageSlider">
+
+
+    <ImageView
+        android:id="@+id/image_slider"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/cnpinyin_logo"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+
+            android:id="@+id/prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="prev"/>
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="next"/>
+
+    </LinearLayout>
+
+
+
+<!--    <android.support.v4.view.ViewPager
+        android:id="@+id/popup_image_slider_container"
+        android:layout_width="400dp"
+        android:layout_height="400dp">
+
+    </android.support.v4.view.ViewPager>-->
+
+</LinearLayout>

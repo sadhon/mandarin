@@ -9,6 +9,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.cnpinyin.lastchinese.R;
+import com.cnpinyin.lastchinese.extras.TypeFaceProvider;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         this.ctx = ctx;
     }
 
-    public void update(HashMap<String, List<String>> child_titles){
+    public void update(HashMap<String, List<String>> child_titles) {
         this.child_titles = child_titles;
     }
 
@@ -40,14 +41,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-
-
     @Override
     public int getChildrenCount(int groupPosition) {
         return child_titles.get(header_titles.get(groupPosition)).size();
     }
-
-
 
 
     @Override
@@ -56,14 +53,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-
-
     @Override
     public Object getChild(int groupPosition, int childPosition) {
         return child_titles.get(header_titles.get(groupPosition)).get(childPosition);
     }
-
-
 
 
     @Override
@@ -72,16 +65,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-
-
-
     @Override
     public long getChildId(int groupPosition, int childPosition) {
         return childPosition;
     }
-
-
-
 
 
     @Override
@@ -90,38 +77,32 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-
-
-
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String title = (String) this.getGroup(groupPosition);
 
-        if(convertView == null){
+        if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.parent_layout, null);
         }
 
         TextView headerTitle = (TextView) convertView.findViewById(R.id.header_title);
         headerTitle.setText(title);
-        headerTitle.setTypeface(null, Typeface.BOLD);
 
         return convertView;
     }
 
 
-
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         String child_title = (String) getChild(groupPosition, childPosition);
-        if(convertView == null){
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.child_layout, null);
         }
 
         TextView childHeader = (TextView) convertView.findViewById(R.id.child_header);
         childHeader.setText(child_title);
-        childHeader.setTypeface(null, Typeface.BOLD);
         return convertView;
     }
 

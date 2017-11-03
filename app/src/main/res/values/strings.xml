@@ -42,8 +42,6 @@
     </string-array>
 
 
-
-
     <string name="title_activity_tabed">TabedActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
 

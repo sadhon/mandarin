@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -23,6 +24,7 @@ import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.PageContent;
+import com.cnpinyin.lastchinese.extras.TypeFaceProvider;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
 import org.json.JSONArray;
@@ -39,8 +41,10 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
     private android.support.v4.view.ViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
-    Toolbar toolbar;
+    private Toolbar toolbar;
+    private TextView toolBarTitle;
     private Spinner spinner;
+
     Button prev, next;
     private int size;
 
@@ -53,10 +57,14 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_tabed);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolBarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
         spinner = (Spinner) findViewById(R.id.spinner);
         mViewPager = (android.support.v4.view.ViewPager) findViewById(R.id.container);
         prev = (Button) findViewById(R.id.btn_next);
         next = (Button) findViewById(R.id.btn_prev);
+
+
+        toolBarTitle.setTypeface(TypeFaceProvider.getTypeFace(ViewPagerSlider.this,"orangejuice"));
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
@@ -71,7 +79,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
 
         // child = child.toUpperCase();
-        getSupportActionBar().setTitle(child);
+        toolBarTitle.setText(child.toUpperCase());
 
 
         next.setOnClickListener(this);
