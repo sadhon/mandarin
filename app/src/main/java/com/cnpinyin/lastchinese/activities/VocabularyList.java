@@ -56,8 +56,8 @@ public class VocabularyList extends AppCompatActivity
         final HashMap<String, String> map = new HashMap<>();
 
         map.put("By Topics Part 1", "topic");
-        map.put("By Topics Part 2", "lesson");
-        map.put("By Topics Part3 + Image", "lesson");
+        map.put("By Topics Part 2", "topic2");
+        map.put("By Topics Part3 + Image", "topic3");
         map.put("By Level", "level");
         map.put("By Lesson", "lesson");
         map.put("By HSK", "hsk");
@@ -111,7 +111,7 @@ public class VocabularyList extends AppCompatActivity
                         exp_listview.collapseGroup(groupPosition);
                     } else {
 
-                        String server_url = AllConstans.SERVER_URL + parentEndPoint;
+                        String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
 
                        // Log.e("parent1", parentEndPoint);
 
@@ -125,11 +125,7 @@ public class VocabularyList extends AppCompatActivity
                                         final List<Integer> childSizeList = new ArrayList<>();
                                         List<String> keysList = new ArrayList<String>();
 
-
-
                                         try {
-
-
                                             //Determining dynamically keys from the first object
 
                                             JSONObject firstJSONObject = response.getJSONObject(0);
@@ -142,7 +138,6 @@ public class VocabularyList extends AppCompatActivity
                                             }
 
                                             //Determining child values and sizes using the above keys
-
                                             String childValue;
                                             int childSizeValue;
 
@@ -151,8 +146,6 @@ public class VocabularyList extends AppCompatActivity
                                                 JSONObject singleObj = response.getJSONObject(i);
 
                                                 // Determining  single child value and size
-
-
                                                 //as Sometime it doesn't get keys serially so this solution
 
                                                 if(keysList.get(0).equalsIgnoreCase("size")){
@@ -190,8 +183,6 @@ public class VocabularyList extends AppCompatActivity
 
                                                     Intent intent = new Intent(getApplicationContext(),
                                                             ViewPagerSlider.class);
-
-
                                                     intent.putExtra("parentEndPoint", parentEndPoint);
                                                     intent.putExtra("pageTitle", childValue);
                                                     intent.putExtra("contentSize", childSize);

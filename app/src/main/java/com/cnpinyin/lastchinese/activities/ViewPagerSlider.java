@@ -64,7 +64,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         next = (Button) findViewById(R.id.btn_prev);
 
 
-        toolBarTitle.setTypeface(TypeFaceProvider.getTypeFace(ViewPagerSlider.this,"orangejuice"));
+        toolBarTitle.setTypeface(TypeFaceProvider.getTypeFace(ViewPagerSlider.this, "orangejuice"));
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
@@ -92,8 +92,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         String range = "";
 
 
-        if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") ) {
-
+        if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk")) {
 
 
             for (int i = 1; i < size; i++) {
@@ -156,85 +155,89 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 //determining page index
                 int index = (min - 1) / 20;
 
-                if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") ){
+                if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk")) {
                     index = (min - 1) / 50;
                 }
 
-
                 final int currentPageIndex = index;
-
 
                 //URL space is replaced by "%20
                 String cleanChild = child.replaceAll(" ", "%20");
 
                 //normal range difference 20
-                String server_url = AllConstans.SERVER_URL + parentEndPoint + "/" + cleanChild + "?page=" + index;
-
+                String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "/" + cleanChild + "?page=" + index;
 
                 //for range difference 50
-                if ( parentEndPoint.equalsIgnoreCase("hsk") ){
+                if (parentEndPoint.equalsIgnoreCase("hsk")) {
                     server_url += "&size=50";
-                }else if(parentEndPoint.equalsIgnoreCase("bct")){
-                    server_url = AllConstans.SERVER_URL + parentEndPoint + "?page=" + index + "&size=50";
+                } else if (parentEndPoint.equalsIgnoreCase("bct")) {
+                    server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "?page=" + index + "&size=50";
                 }
 
-
-
-
                 //Server data request
-
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, server_url, (String) null,
 
                         new Response.Listener<JSONObject>() {
-
                             ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
-
                             @Override
                             public void onResponse(JSONObject response) {
-
                                 try {
                                     JSONArray jsonArray = response.getJSONArray("content");
 
-                                    String cnchar;
-                                    String pinyin;
-                                    String engword;
+                                   /* declaring some temporary String variables for catching temporary values*/
+                                    String cnchar, pinyin, engword, sound;
                                     for (int i = 0; i < jsonArray.length(); i++) {
+
+                                        //get content object one by one
                                         JSONObject contentObj = jsonArray.getJSONObject(i);
 
+                                        //checking objects belong to which parent
+                                        if (parentEndPoint.equals("topic3")) {
+                                            cnchar = contentObj.getString("md_cnchar");
+                                            pinyin = contentObj.getString("md_pinyin");
+                                            engword = contentObj.getString("md_engword");
+                                            sound = contentObj.getString("md_sound");
 
-                                        if (parentEndPoint.equalsIgnoreCase("hsk")) {
+                                        } else if (parentEndPoint.equalsIgnoreCase("hsk")) {
                                             cnchar = contentObj.getString("hskw_char");
                                             pinyin = contentObj.getString("hskw_pinyin");
                                             engword = contentObj.getString("hskw_eng");
-                                        }else if(parentEndPoint.equalsIgnoreCase("bct")){
+                                            sound = contentObj.getString("hsk_sound");
+
+                                        } else if (parentEndPoint.equalsIgnoreCase("bct")) {
                                             cnchar = contentObj.getString("bct_char");
                                             pinyin = contentObj.getString("bct_pinyin");
                                             engword = contentObj.getString("bct_eng");
+                                            sound = contentObj.getString("bct_sound");
+
+                                        } else if (parentEndPoint.equalsIgnoreCase("topic2")) {
+                                            cnchar = contentObj.getString("wp2_char");
+                                            pinyin = contentObj.getString("wp2_pinyin");
+                                            engword = contentObj.getString("wp2_eng");
+                                            sound = contentObj.getString("wp2_sound");
+
                                         } else {
                                             cnchar = contentObj.getString("cnchar");
                                             pinyin = contentObj.getString("pinyin");
                                             engword = contentObj.getString("engword");
-
+                                            sound = contentObj.getString("wp_sound");
                                         }
 
-                                        PageContent pageContent = new PageContent(pinyin, engword, cnchar);
+                                        PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
                                         pageContents.add(pageContent);
-
-                                        customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, ranges.size(), pageContents);
-                                        mViewPager.setAdapter(customSwipeAdapter);
-
-                                        //set Current page
-                                        mViewPager.setCurrentItem(currentPageIndex, true);
-                                        //mViewPager.disableScroll(true);
-
-
-                                        pageChangeListener();
-
 
                                     }
 
+
+                                    customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, ranges.size(), pageContents, parentEndPoint);
+                                    mViewPager.setAdapter(customSwipeAdapter);
+
+                                    //set Current page
+                                    mViewPager.setCurrentItem(currentPageIndex, true);
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    Toast.makeText(ViewPagerSlider.this, "" + e, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         },
@@ -249,7 +252,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 );
 
                 MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-
             }
 
             @Override
@@ -261,40 +263,26 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    public void  pageChangeListener(){
-
-    }
-
-
-
+    //controlling previous next page
     @Override
     public void onClick(View v) {
-
         Button b = (Button) v;
         String s = b.getText().toString();
         int currentPage = mViewPager.getCurrentItem();
 
         if (s.equals("prev")) {
 
-            int prevIndex = spinner.getSelectedItemPosition()-1;
-            if (prevIndex >= 0){
+            int prevIndex = spinner.getSelectedItemPosition() - 1;
+            if (prevIndex >= 0) {
                 spinner.setSelection(prevIndex);
                 mViewPager.setCurrentItem(currentPage - 1, true);
-              //  b.setVisibility(view.Visi);
             }
-
-
         } else {
-
-
-            int nextIndex = spinner.getSelectedItemPosition()+1;
-            if (nextIndex < ranges.size()){
+            int nextIndex = spinner.getSelectedItemPosition() + 1;
+            if (nextIndex < ranges.size()) {
                 spinner.setSelection(nextIndex);
                 mViewPager.setCurrentItem(currentPage + 1, true);
             }
-
         }
-
-
     }
 }

@@ -22,18 +22,16 @@ import java.util.ArrayList;
  */
 
 public class CustomSwipeAdapter extends PagerAdapter {
-
     private Context ctx;
     private int size ;
     private ArrayList<PageContent> contents;
+    private String parentEndPoint;
 
-
-    public CustomSwipeAdapter(Context ctx, int size, ArrayList<PageContent> contents) {
-
+    public CustomSwipeAdapter(Context ctx, int size, ArrayList<PageContent> contents, String parentEndPoint) {
         this.ctx = ctx;
         this.size = size;
         this.contents = contents;
-
+        this.parentEndPoint = parentEndPoint;
     }
 
     @Override
@@ -43,25 +41,29 @@ public class CustomSwipeAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return (view == (LinearLayout) object );
+        return (view == object );
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View item_view = layoutInflater.inflate(R.layout.page_recycler_view, container, false);
-
         RecyclerView recyclerView = (RecyclerView) item_view.findViewById(R.id.page_recycler);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ctx);
         recyclerView.setLayoutManager(layoutManager);
 
-        PageRecyclerViewAdapter pageRecyclerViewAdapter = new PageRecyclerViewAdapter(ctx, contents);
-        recyclerView.setAdapter(pageRecyclerViewAdapter);
-        container.addView(item_view);
+        //checking which recyclerview is going to load
+        if(parentEndPoint.equalsIgnoreCase("topic3")){
+            Topic3PageRecyclerViewAdapter topic3PageRecyclerViewAdapter = new Topic3PageRecyclerViewAdapter(ctx, contents);
+            recyclerView.setAdapter(topic3PageRecyclerViewAdapter);
 
+        }else {
+            PageRecyclerViewAdapter pageRecyclerViewAdapter = new PageRecyclerViewAdapter(ctx, contents);
+            recyclerView.setAdapter(pageRecyclerViewAdapter);
+        }
+        container.addView(item_view);
         return item_view;
     }
-
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {

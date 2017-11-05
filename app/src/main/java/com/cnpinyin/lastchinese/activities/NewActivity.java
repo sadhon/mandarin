@@ -39,7 +39,7 @@ public class NewActivity extends AppCompatActivity {
 
                 try {
 
-                    mediaPlayer.setDataSource("http://docs.google.com/uc?export=download&id=0B-5aiy1XCcO7SVl0aDhEVGJBSms");
+                    mediaPlayer.setDataSource("http://cnpinyin.com/pinyin/PYT/sound_icon/md_wpsound/cnp312310.mp3");
 
                     mediaPlayer.prepare();
                     mediaPlayer.start();
@@ -64,21 +64,5 @@ public class NewActivity extends AppCompatActivity {
 
         });
 
-
-
-
-
-
-/*
-
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(NewActivity.this, DialogueImageSlider.class);
-                intent.putExtra("cnchar", "你好不好钢琴谱");
-                startActivity(intent);
-            }
-        })*/;
     }
 }

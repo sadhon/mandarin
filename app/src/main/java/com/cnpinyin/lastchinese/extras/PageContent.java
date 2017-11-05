@@ -9,15 +9,25 @@ public class PageContent {
     private String cnpinyin;
     private String engword;
     private String cnchar;
+    private String soundfile;
 
 
-    public PageContent(String cnpinyin, String engword, String cnchar){
+    public PageContent(String cnpinyin, String engword, String cnchar, String soundfile){
 
         this.setCnpinyin(cnpinyin);
         this.setEngword(engword);
         this.setCnchar(cnchar);
+        this.setSoundfile(soundfile);
 
 
+    }
+
+    public String getSoundfile() {
+        return soundfile;
+    }
+
+    public void setSoundfile(String soundfile) {
+        this.soundfile = soundfile;
     }
 
     public String getCnchar() {
