@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.NewActivity">
+        <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,6 +37,8 @@
             android:theme="@style/Theme.AppCompat.Dialog.Alert">
 
         </activity>
+
+        <service android:name=".services.MediaPlayerService"/>
     </application>
 
 </manifest>

@@ -64,6 +64,10 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
 
 
+        //sound file url
+        final String soundFileUrl = AllConstans.SERVER_BASE_SOUND_URL + pageContents.get(position).getSoundfile();
+
+        //button for playing sound
         holder.sound_icon.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -72,7 +76,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 try {
-                    mediaPlayer.setDataSource(AllConstans.SERVER_BASE_SOUND_URL + pageContents.get(position).getSoundfile());
+                    mediaPlayer.setDataSource(soundFileUrl);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
 
@@ -97,6 +101,9 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
             }
         });
     }
+
+
+
 
     @Override
     public int getItemCount() {
