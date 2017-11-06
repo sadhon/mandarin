@@ -19,6 +19,7 @@ import com.cnpinyin.lastchinese.activities.DialogueImageSlider;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.PageContent;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
@@ -36,7 +37,6 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
         this.ctx = ctx;
     }
 
-
     @Override
     public Topic3PageRecyclerViewAdapter.PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -46,7 +46,7 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
     }
 
     @Override
-    public void onBindViewHolder(final PageViewHolder holder, int position) {
+    public void onBindViewHolder(final PageViewHolder holder, final int position) {
         final PageContent content = pageContents.get(position);
 
         holder.page_text.setText(content.getCnchar());
@@ -62,9 +62,9 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
             }
         });
 
-        holder.sound_icon.setOnClickListener(new View.OnClickListener() {
 
-            String soundFile = AllConstans.SERVER_BASE_SOUND_URL + content.getSoundfile();
+        //button for playing sound
+        holder.sound_icon.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -72,7 +72,10 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 try {
-                    mediaPlayer.setDataSource(soundFile);
+                    String query = URLEncoder.encode(pageContents.get(position).getSoundfile(), "utf-8");
+                    String url = AllConstans.SERVER_BASE_SOUND_URL + query;
+
+                    mediaPlayer.setDataSource(url);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
 
@@ -109,11 +112,11 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
         return pageContents.size();
     }
 
-    public static class PageViewHolder extends RecyclerView.ViewHolder {
+    static class PageViewHolder extends RecyclerView.ViewHolder {
         TextView page_text, translation, pinyin;
         ImageView writing_icon, sound_icon, topic_img;
 
-        public PageViewHolder(View itemView) {
+        PageViewHolder(View itemView) {
             super(itemView);
             page_text = (TextView) itemView.findViewById(R.id.page_txt);
             pinyin = (TextView) itemView.findViewById(R.id.pinyin_txt);

@@ -19,6 +19,10 @@ import com.cnpinyin.lastchinese.activities.DialogueImageSlider;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.PageContent;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
@@ -64,8 +68,12 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
 
 
+        //sound related code begins here..
         //sound file url
-        final String soundFileUrl = AllConstans.SERVER_BASE_SOUND_URL + pageContents.get(position).getSoundfile();
+
+
+
+
 
         //button for playing sound
         holder.sound_icon.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +84,10 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 try {
-                    mediaPlayer.setDataSource(soundFileUrl);
+                    String query = URLEncoder.encode(pageContents.get(position).getSoundfile(), "utf-8");
+                    String url = AllConstans.SERVER_BASE_SOUND_URL + query;
+
+                    mediaPlayer.setDataSource(url);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
 
