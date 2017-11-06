@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(final PageViewHolder holder, int position) {
+    public void onBindViewHolder(final PageViewHolder holder, final int position) {
 
         final PageContent content = pageContents.get(position);
 
@@ -61,10 +62,9 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
             }
         });
 
+
+
         holder.sound_icon.setOnClickListener(new View.OnClickListener() {
-
-            String soundFile = AllConstans.SERVER_BASE_SOUND_URL + content.getSoundfile();
-
 
             @Override
             public void onClick(View v) {
@@ -72,7 +72,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 try {
-                    mediaPlayer.setDataSource(soundFile);
+                    mediaPlayer.setDataSource(AllConstans.SERVER_BASE_SOUND_URL + pageContents.get(position).getSoundfile());
                     mediaPlayer.prepare();
                     mediaPlayer.start();
 
@@ -88,6 +88,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         holder.sound_icon.setEnabled(true);
+                        holder.sound_icon.setImageResource(R.drawable.sound_icon);
                         mediaPlayer.reset();
                         mediaPlayer.release();
                         mediaPlayer = null;

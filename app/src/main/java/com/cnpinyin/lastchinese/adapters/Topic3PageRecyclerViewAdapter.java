@@ -70,24 +70,26 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
             public void onClick(View v) {
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
                 try {
                     mediaPlayer.setDataSource(soundFile);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
-                    holder.sound_icon.setEnabled(false);
 
                     //loading sound playing gif
                     Glide.with(ctx).load(R.raw.sound_playing).into(holder.sound_icon);
-
+                    holder.sound_icon.setEnabled(false);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Toast.makeText(ctx, "" + e, Toast.LENGTH_SHORT).show();
                 }
 
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        holder.sound_icon.setImageResource(R.drawable.sound_icon);
                         holder.sound_icon.setEnabled(true);
+                        holder.sound_icon.setImageResource(R.drawable.sound_icon);
+                        mediaPlayer.reset();
                         mediaPlayer.release();
                         mediaPlayer = null;
                     }

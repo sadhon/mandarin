@@ -138,12 +138,12 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
         spinnerAdapter.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
 
+        spinner.setDropDownWidth(300);
         spinner.setAdapter(spinnerAdapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
 
                 //finding min value of selected range..
                 String s = spinner.getSelectedItem().toString();

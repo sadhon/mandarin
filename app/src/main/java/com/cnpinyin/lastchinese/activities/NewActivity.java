@@ -20,11 +20,14 @@ public class NewActivity extends AppCompatActivity {
     Button button;
     MediaPlayer mediaPlayer;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_activity);
 
+
+        final String soundFile = "http://cnpinyin.com/pinyin/PYT/sound/md_wpsound/cnp312310.mp3";
 
         button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -33,13 +36,12 @@ public class NewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 try {
 
-                    mediaPlayer.setDataSource("http://cnpinyin.com/pinyin/PYT/sound_icon/md_wpsound/cnp312310.mp3");
+                    mediaPlayer.setDataSource(soundFile);
 
                     mediaPlayer.prepare();
                     mediaPlayer.start();
