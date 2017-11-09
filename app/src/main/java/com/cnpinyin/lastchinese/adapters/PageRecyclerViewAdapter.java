@@ -33,7 +33,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
     private ArrayList<PageContent> pageContents;
     private Context ctx;
-    MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer = null;
 
     PageRecyclerViewAdapter(Context ctx, ArrayList<PageContent> pageContents) {
         this.pageContents = pageContents;
@@ -71,40 +71,41 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
         //sound related code begins here..
         //sound file url
 
-
-
-
-
         //button for playing sound
         holder.sound_icon.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 try {
                     String query = URLEncoder.encode(pageContents.get(position).getSoundfile(), "utf-8");
                     String url = AllConstans.SERVER_BASE_SOUND_URL + query;
-
                     mediaPlayer.setDataSource(url);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-
-                    //loading sound playing gif
-                    Glide.with(ctx).load(R.raw.sound_playing).into(holder.sound_icon);
+                    mediaPlayer.prepareAsync();
+                    //mediaPlayer.prepare();
                     holder.sound_icon.setEnabled(false);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(ctx, "" + e, Toast.LENGTH_SHORT).show();
                 }
 
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mediaPlayer.start();
+                        //loading sound playing gif
+                        Glide.with(ctx).load(R.raw.sound_playing).into(holder.sound_icon);
+                    }
+                });
+
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         holder.sound_icon.setEnabled(true);
                         holder.sound_icon.setImageResource(R.drawable.sound_icon);
-                        mediaPlayer.reset();
                         mediaPlayer.release();
                         mediaPlayer = null;
                     }

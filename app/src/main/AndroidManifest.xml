@@ -13,7 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity android:name=".activities.NewActivity" />-->
+        <!-- <activity android:name=".activities.NewActivity" /> -->
         <activity
             android:name=".activities.VocabularyList"
             android:label="Vocabulary List"
@@ -30,15 +29,16 @@
             android:name=".activities.ViewPagerSlider"
             android:label="@string/title_activity_tabed"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.DialogueImageSlider"
             android:label="cnpinyin.com"
-            android:theme="@style/Theme.AppCompat.Dialog.Alert">
+            android:theme="@style/Theme.AppCompat.Dialog.Alert" />
 
-        </activity>
+        <service android:name=".services.MediaPlayerService"
+            android:label=""/>
 
-        <service android:name=".services.MediaPlayerService"/>
+        <activity android:name=".activities.Slc"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

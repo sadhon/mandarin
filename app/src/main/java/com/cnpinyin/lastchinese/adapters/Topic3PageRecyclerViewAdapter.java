@@ -76,23 +76,31 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
                     String url = AllConstans.SERVER_BASE_SOUND_URL + query;
 
                     mediaPlayer.setDataSource(url);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
+                    mediaPlayer.prepareAsync();
+                    //mediaPlayer.prepare();
 
-                    //loading sound playing gif
-                    Glide.with(ctx).load(R.raw.sound_playing).into(holder.sound_icon);
                     holder.sound_icon.setEnabled(false);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(ctx, "" + e, Toast.LENGTH_SHORT).show();
                 }
 
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mediaPlayer.start();
+
+                        //loading sound playing gif
+                        Glide.with(ctx).load(R.raw.sound_playing).into(holder.sound_icon);
+                    }
+                });
+
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         holder.sound_icon.setEnabled(true);
                         holder.sound_icon.setImageResource(R.drawable.sound_icon);
-                        mediaPlayer.reset();
+                        //mediaPlayer.reset();
                         mediaPlayer.release();
                         mediaPlayer = null;
                     }

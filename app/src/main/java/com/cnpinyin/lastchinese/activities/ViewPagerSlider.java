@@ -92,7 +92,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         String range = "";
 
 
-        if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk")) {
+        if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") || parentEndPoint.equalsIgnoreCase("sc")) {
 
 
             for (int i = 1; i < size; i++) {
@@ -155,7 +155,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 //determining page index
                 int index = (min - 1) / 20;
 
-                if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk")) {
+                if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") || parentEndPoint.equalsIgnoreCase("sc")) {
                     index = (min - 1) / 50;
                 }
 
@@ -172,6 +172,9 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                     server_url += "&size=50";
                 } else if (parentEndPoint.equalsIgnoreCase("bct")) {
                     server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "?page=" + index + "&size=50";
+                }else  if(parentEndPoint.equalsIgnoreCase("sc")){
+                    server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "?page=" + index + "&size=50";
+
                 }
 
                 //Server data request
@@ -216,6 +219,12 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                             engword = contentObj.getString("wp2_eng");
                                             sound = contentObj.getString("wp2_sound");
 
+                                        } else if (parentEndPoint.equalsIgnoreCase("sc")) {
+                                            cnchar = contentObj.getString("sc_char");
+                                            pinyin = contentObj.getString("sc_pinyin");
+                                            engword = contentObj.getString("sc_eng");
+                                            sound = contentObj.getString("sc_sound");
+
                                         } else {
                                             cnchar = contentObj.getString("cnchar");
                                             pinyin = contentObj.getString("pinyin");
@@ -241,6 +250,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                 }
                             }
                         },
+
 
 
                         new Response.ErrorListener() {

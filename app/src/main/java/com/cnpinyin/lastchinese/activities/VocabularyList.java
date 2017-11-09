@@ -1,14 +1,13 @@
 package com.cnpinyin.lastchinese.activities;
 
+import android.support.design.widget.NavigationView;
+import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,12 +18,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.ExpandableListAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -36,9 +37,9 @@ import java.util.List;
 public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    ExpandableListView exp_listview;
-    ExpandableListAdapter adapter;
-
+    private ExpandableListView exp_listview;
+    private ExpandableListAdapter adapter;
+    private HashMap<String, String> sclMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,6 @@ public class VocabularyList extends AppCompatActivity
         //Hasmap for dynamically getting url endpoint
 
         final HashMap<String, String> map = new HashMap<>();
-
         map.put("By Topics Part 1", "topic");
         map.put("By Topics Part 2", "topic2");
         map.put("By Topics Part3 + Image", "topic3");
@@ -62,8 +62,18 @@ public class VocabularyList extends AppCompatActivity
         map.put("By Lesson", "lesson");
         map.put("By HSK", "hsk");
         map.put("By BCT", "bct");
-        map.put("Single Character List", "lesson");
+        map.put("Single Character List", "sc");
 
+
+        sclMap.put("By Range","range");
+        sclMap.put("By Stroke No", "stroke");
+        sclMap.put("by Radical", "radical");
+        sclMap.put("By Pinyin", "pinyin");
+
+
+        final String[] sclArray = {"By Range", "By Stroke No", "By Radical", "By Pinyin"};
+
+        ArrayList<String> scl = new ArrayList<>(Arrays.asList(sclArray));
 
         //Vocbulary Main Items example: topic , lesson etc
         String[] heading_items = getResources().getStringArray(R.array.heading_items);
@@ -74,10 +84,13 @@ public class VocabularyList extends AppCompatActivity
         //Sub Item List under Main Item. example: conversatoin, verb etc under topic
         final HashMap<String, List<String>> childList = new HashMap<String, List<String>>();
 
-        //Firstly set sub itemList empty coz data will load dynamically from server
-        for (int i = 0; i < headings.size(); i++) {
+        //set sub itemList empty except single character list coz data will load dynamically from server
+        for (int i = 0; i < headings.size() - 1; i++) {
             childList.put(headings.get(i), new ArrayList<String>());
         }
+
+        //setting Single Character List default as it is static
+        childList.put(headings.get(headings.size() - 1), scl);
 
         //provided here Main Item List , hashmap of child Item List and applicationContext
         adapter = new ExpandableListAdapter(headings, childList, getApplicationContext());
@@ -111,112 +124,90 @@ public class VocabularyList extends AppCompatActivity
                         exp_listview.collapseGroup(groupPosition);
                     } else {
 
-                        String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
+                        if (parentEndPoint.equals("sc") && childList.get(headings.get(groupPosition)).size() > 0) {
+                            provideParams(parentEndPoint, headings, childList, new ArrayList<Integer>());
+                        } else {
 
-                       // Log.e("parent1", parentEndPoint);
+                            String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
+                            // Log.e("parent1", parentEndPoint);
+                            JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                                    new Response.Listener<JSONArray>() {
+                                        @Override
+                                        public void onResponse(JSONArray response) {
 
+                                            List<String> childValueList = new ArrayList<String>();
+                                            final List<Integer> childSizeList = new ArrayList<>();
+                                            List<String> keysList = new ArrayList<String>();
 
-                        JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
-                                new Response.Listener<JSONArray>() {
-                                    @Override
-                                    public void onResponse(JSONArray response) {
+                                            try {
+                                                //Determining dynamically keys from the first object
 
-                                        List<String> childValueList = new ArrayList<String>();
-                                        final List<Integer> childSizeList = new ArrayList<>();
-                                        List<String> keysList = new ArrayList<String>();
+                                                JSONObject firstJSONObject = response.getJSONObject(0);
+                                                Iterator keysIterator = firstJSONObject.keys();
 
-                                        try {
-                                            //Determining dynamically keys from the first object
+                                                while (keysIterator.hasNext()) {
+                                                    String key = (String) keysIterator.next();
+                                                    keysList.add(key);
 
-                                            JSONObject firstJSONObject = response.getJSONObject(0);
-                                            Iterator keysIterator = firstJSONObject.keys();
-
-                                            while (keysIterator.hasNext()) {
-                                                String key = (String) keysIterator.next();
-                                                keysList.add(key);
-
-                                            }
-
-                                            //Determining child values and sizes using the above keys
-                                            String childValue;
-                                            int childSizeValue;
-
-                                            for (int i = 0; i < response.length(); i++) {
-                                                // Get current json object
-                                                JSONObject singleObj = response.getJSONObject(i);
-
-                                                // Determining  single child value and size
-                                                //as Sometime it doesn't get keys serially so this solution
-
-                                                if(keysList.get(0).equalsIgnoreCase("size")){
-                                                    childValue = singleObj.getString(keysList.get(1));
-                                                    childSizeValue = singleObj.getInt(keysList.get(0));
-                                                }else {
-                                                    childValue = singleObj.getString(keysList.get(0));
-                                                    childSizeValue = singleObj.getInt(keysList.get(1));
                                                 }
 
-                                                //adding single child value and size in respective List
-                                                childValueList.add(childValue);
-                                                childSizeList.add(childSizeValue);
+                                                //Determining child values and sizes using the above keys
+                                                String childValue;
+                                                int childSizeValue;
 
+                                                for (int i = 0; i < response.length(); i++) {
+                                                    // Get current json object
+                                                    JSONObject singleObj = response.getJSONObject(i);
+
+                                                    // Determining  single child value and size
+                                                    //as Sometime it doesn't get keys serially so this solution
+
+                                                    if (keysList.get(0).equalsIgnoreCase("size")) {
+                                                        childValue = singleObj.getString(keysList.get(1));
+                                                        childSizeValue = singleObj.getInt(keysList.get(0));
+                                                    } else {
+                                                        childValue = singleObj.getString(keysList.get(0));
+                                                        childSizeValue = singleObj.getInt(keysList.get(1));
+                                                    }
+
+                                                    //adding single child value and size in respective List
+                                                    childValueList.add(childValue);
+                                                    childSizeList.add(childSizeValue);
+                                                }
+
+                                                //Adding child value list against each parent
+                                                childList.put(headings.get(groupPosition), childValueList);
+
+
+                                                //Update ExpandableListAdapter..
+                                                adapter.update(childList);
+
+                                                //Setting adapter with expandable list view
+                                                exp_listview.setAdapter(adapter);
+                                                exp_listview.expandGroup(groupPosition);
+
+                                                provideParams(parentEndPoint, headings, childList, childSizeList);
+
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
                                             }
 
-                                            //Adding child value list against each parent
-                                            childList.put(headings.get(groupPosition), childValueList);
-
-                                            //Update ExpandableListAdapter..
-                                            adapter.update(childList);
-
-                                            //Setting adapter with expandable list view
-                                            exp_listview.setAdapter(adapter);
-                                            exp_listview.expandGroup(groupPosition);
-
-
-                                            exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                                                @Override
-                                                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-
-                                                    int childSize = childSizeList.get(childPosition);
-                                                    String childValue = childList.get(headings.get(groupPosition))
-                                                            .get(childPosition);
-
-                                                    Intent intent = new Intent(getApplicationContext(),
-                                                            ViewPagerSlider.class);
-                                                    intent.putExtra("parentEndPoint", parentEndPoint);
-                                                    intent.putExtra("pageTitle", childValue);
-                                                    intent.putExtra("contentSize", childSize);
-
-                                                    startActivity(intent);
-
-                                                    return false;
-                                                }
-                                            });
-
-
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
                                         }
+                                    },
 
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Toast.makeText(VocabularyList.this, error + "", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                },
+                            );
 
-                                new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-
-                                        Toast.makeText(VocabularyList.this, error + "", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                        );
-
-                        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
+                            MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
+                        }
                     }
-
-
                 }
-
                 return false;
             }
         });
@@ -233,6 +224,85 @@ public class VocabularyList extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+    }
+
+
+    private void provideParams(final String parentEndPoint, final List<String> headings, final HashMap<String, List<String>> childList, final List<Integer> childSizeList) {
+
+        exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+
+
+                String childValue = childList.get(headings.get(groupPosition))
+                        .get(childPosition);
+
+                if(!parentEndPoint.equalsIgnoreCase("sc"))
+                {
+                    int childSize = childSizeList.get(childPosition);
+
+                    Intent intent = new Intent(getApplicationContext(),
+                            ViewPagerSlider.class);
+                    intent.putExtra("parentEndPoint", parentEndPoint);
+                    intent.putExtra("pageTitle", childValue);
+                    intent.putExtra("contentSize", childSize);
+
+
+                    startActivity(intent);
+                }else{
+
+                    if(childValue.equalsIgnoreCase("By Range")){
+
+                        Toast.makeText(VocabularyList.this, "" +childValue, Toast.LENGTH_SHORT).show();
+
+                        //Fetching size for Range
+                        String url = AllConstans.SERVER_VOC_URL + "sc";
+                        JsonObjectRequest objectRequest =  new JsonObjectRequest(Request.Method.GET, url, (String) null,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                        try {
+                                            int size = response.getInt("totalElements");
+
+                                            Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
+                                            intent.putExtra("parentEndPoint", parentEndPoint);
+                                            intent.putExtra("pageTitle", "By Range");
+                                            intent.putExtra("contentSize", size);
+                                            startActivity(intent);
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                },
+
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+
+                                    }
+                                }
+                        );
+
+                        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
+
+                    }else {
+
+                        //change childvalue to childEndPoint
+                        childValue = sclMap.get(childValue);
+                        Intent intent = new Intent(getApplicationContext(), Slc.class);
+                        intent.putExtra("parentEndPoint", parentEndPoint);
+                        intent.putExtra("childEndPoint", childValue);
+
+                        startActivity(intent);
+                    }
+                }
+
+                return false;
+            }
+        });
     }
 
 
