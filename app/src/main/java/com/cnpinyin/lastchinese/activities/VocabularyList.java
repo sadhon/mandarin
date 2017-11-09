@@ -253,9 +253,7 @@ public class VocabularyList extends AppCompatActivity
 
                     if(childValue.equalsIgnoreCase("By Range")){
 
-                        Toast.makeText(VocabularyList.this, "" +childValue, Toast.LENGTH_SHORT).show();
-
-                        //Fetching size for Range
+                        //Fetching size for Range star new Activity
                         String url = AllConstans.SERVER_VOC_URL + "sc";
                         JsonObjectRequest objectRequest =  new JsonObjectRequest(Request.Method.GET, url, (String) null,
                                 new Response.Listener<JSONObject>() {

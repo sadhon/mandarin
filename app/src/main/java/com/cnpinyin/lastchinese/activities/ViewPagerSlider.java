@@ -95,7 +95,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         if (child.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") || parentEndPoint.equalsIgnoreCase("sc")) {
 
 
-            for (int i = 1; i < size; i++) {
+            for (int i = 1; i <= size; i++) {
 
                 high = min + 49;
                 if (size < high) {
@@ -114,7 +114,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
 
         } else {
-            for (int i = 1; i < size; i++) {
+            for (int i = 1; i <= size; i++) {
 
                 high = min + 19;
                 if (size < high) {
