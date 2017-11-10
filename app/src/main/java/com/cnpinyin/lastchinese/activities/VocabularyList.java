@@ -8,6 +8,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +41,8 @@ public class VocabularyList extends AppCompatActivity
     private ExpandableListView exp_listview;
     private ExpandableListAdapter adapter;
     private HashMap<String, String> sclMap = new HashMap<>();
+    HashMap<String, String> map = new HashMap<>();
+    private  int lastExpandedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +53,9 @@ public class VocabularyList extends AppCompatActivity
 
         //toolbar setting
         setSupportActionBar(toolbar);
-
-
         //Hasmap for dynamically getting url endpoint
 
-        final HashMap<String, String> map = new HashMap<>();
+
         map.put("By Topics Part 1", "topic");
         map.put("By Topics Part 2", "topic2");
         map.put("By Topics Part3 + Image", "topic3");
@@ -67,11 +68,11 @@ public class VocabularyList extends AppCompatActivity
 
         sclMap.put("By Range","range");
         sclMap.put("By Stroke No", "stroke");
-        sclMap.put("by Radical", "radical");
+        sclMap.put("By Radical", "radical");
         sclMap.put("By Pinyin", "pinyin");
 
 
-        final String[] sclArray = {"By Range", "By Stroke No", "By Radical", "By Pinyin"};
+        final String[] sclArray = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
 
         ArrayList<String> scl = new ArrayList<>(Arrays.asList(sclArray));
 
@@ -101,6 +102,17 @@ public class VocabularyList extends AppCompatActivity
         //Here group click listener will be inseted..
 
 
+        exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                if (lastExpandedPosition != -1
+                        && groupPosition != lastExpandedPosition) {
+                    exp_listview.collapseGroup(lastExpandedPosition);
+                }
+                lastExpandedPosition = groupPosition;
+            }
+        });
+
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
@@ -125,7 +137,11 @@ public class VocabularyList extends AppCompatActivity
                     } else {
 
                         if (parentEndPoint.equals("sc") && childList.get(headings.get(groupPosition)).size() > 0) {
+
                             provideParams(parentEndPoint, headings, childList, new ArrayList<Integer>());
+
+
+
                         } else {
 
                             String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
@@ -237,6 +253,8 @@ public class VocabularyList extends AppCompatActivity
                 String childValue = childList.get(headings.get(groupPosition))
                         .get(childPosition);
 
+                Log.e("child", childValue);
+
                 if(!parentEndPoint.equalsIgnoreCase("sc"))
                 {
                     int childSize = childSizeList.get(childPosition);
@@ -246,7 +264,6 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("parentEndPoint", parentEndPoint);
                     intent.putExtra("pageTitle", childValue);
                     intent.putExtra("contentSize", childSize);
-
 
                     startActivity(intent);
                 }else{
@@ -294,7 +311,11 @@ public class VocabularyList extends AppCompatActivity
                         intent.putExtra("parentEndPoint", parentEndPoint);
                         intent.putExtra("childEndPoint", childValue);
 
-                        startActivity(intent);
+
+                        Log.e("url", AllConstans.SERVER_VOC_URL+parentEndPoint+"/"+childValue);
+
+                        if(childValue!=null)
+                            startActivity(intent);
                     }
                 }
 

@@ -1,18 +1,16 @@
 package com.cnpinyin.lastchinese.activities;
 
 import android.content.Intent;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -24,14 +22,13 @@ import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.CustomViewPager;
 import com.cnpinyin.lastchinese.extras.PageContent;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -41,9 +38,9 @@ public class Slc extends AppCompatActivity {
 
     private CustomViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
-    private Toolbar toolbar;
     private TextView mainSpinnerTitle, subSpinnerTitle;
     private Spinner mainSpinner, subSpiinner;
+    android.support.v7.widget.Toolbar toolbar;
 
 
     @Override
@@ -52,11 +49,16 @@ public class Slc extends AppCompatActivity {
         setContentView(R.layout.activity_slc);
 
 
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+
         mainSpinner = (Spinner) findViewById(R.id.main_spinner);
         subSpiinner = (Spinner) findViewById(R.id.sub_spinner);
         mainSpinnerTitle = (TextView) findViewById(R.id.main_spinner_title);
         subSpinnerTitle = (TextView) findViewById(R.id.sub_spinner_title);
         mViewPager = (CustomViewPager) findViewById(R.id.container);
+
+
+        setSupportActionBar(toolbar);
 
 
         Intent intent = getIntent();
@@ -65,17 +67,13 @@ public class Slc extends AppCompatActivity {
 
         mainSpinnerTitle.setText(childEndPoint.toUpperCase());
         String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint;
-
-      //  ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, new ArrayList<CharSequence>());
-
         JsonArrayRequest arrayRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
 
                         final ArrayList<String> mainSpinnerValues = new ArrayList<>();
-                        ArrayList<String> mainSpinnerSizes = new ArrayList<>();
-                        final HashMap<String, Integer> mainMapSub = new HashMap<>();
+                        final HashMap<String, Integer> mainMapSub = new HashMap<>(); //Size against radical or stroke
                         String main = "";
                         int size = 0;
 
@@ -86,16 +84,20 @@ public class Slc extends AppCompatActivity {
                                     if (childEndPoint.equalsIgnoreCase("stroke")){
                                         main = jObj.getString("numberOfStroke");
                                         size = jObj.getInt("size");
+                                    }else if(childEndPoint.equalsIgnoreCase("radical")){
+                                        main = jObj.getString("radical");
+                                        size = jObj.getInt("size");
                                     }
+
                                     mainSpinnerValues.add(main);
                                     mainMapSub.put(main, size);
                                 }
 
+
+                                //Main Spinner Adapter setting and selected item control
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_layout, mainSpinnerValues);
                                 adapter.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
                                 mainSpinner.setAdapter(adapter);
-
-
 
                                 mainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                     @Override
@@ -116,6 +118,7 @@ public class Slc extends AppCompatActivity {
                                             @Override
                                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+                                                String encodedPart = "";
 
 
                                                 //finding min value of selected range..
@@ -130,9 +133,13 @@ public class Slc extends AppCompatActivity {
                                                 final int currentPageIndex = index;
 
 
+                                                try {
+                                                    encodedPart = URLEncoder.encode(mainSpinerText, "UTF-8");
+                                                } catch (UnsupportedEncodingException e) {
+                                                    e.printStackTrace();
+                                                }
 
-
-                                                String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/"+childEndPoint+"/"+mainSpinerText + "?page=" + index +"&size=50";
+                                                String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/"+childEndPoint+"/"+encodedPart + "?page=" + index +"&size=50";
 
 
                                                 JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
@@ -149,15 +156,13 @@ public class Slc extends AppCompatActivity {
                                                                     for(int i = 0 ; i < jsonArray.length(); i++){
                                                                         JSONObject contentObj = jsonArray.getJSONObject(i);
 
-                                                                            cnchar = contentObj.getString("sc_char");
-                                                                            pinyin = contentObj.getString("sc_pinyin");
-                                                                            engword = contentObj.getString("sc_eng");
-                                                                            sound = contentObj.getString("sc_sound");
-
+                                                                        cnchar = contentObj.getString("sc_char");
+                                                                        pinyin = contentObj.getString("sc_pinyin");
+                                                                        engword = contentObj.getString("sc_eng");
+                                                                        sound = contentObj.getString("sc_sound");
 
                                                                         PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
                                                                         pageContents.add(pageContent);
-
                                                                     }
 
                                                                     customSwipeAdapter = new CustomSwipeAdapter(Slc.this, temp.size(), pageContents, parentEndpoint);
@@ -169,8 +174,6 @@ public class Slc extends AppCompatActivity {
                                                                 } catch (JSONException e) {
                                                                     e.printStackTrace();
                                                                 }
-
-
                                                             }
                                                         },
 
@@ -181,15 +184,9 @@ public class Slc extends AppCompatActivity {
                                                                 Toast.makeText(Slc.this, "" + error, Toast.LENGTH_SHORT).show();
                                                             }
                                                         }
-
                                                 );
 
                                                 MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
-
-
-                                                Log.e("url", url);
-
-
                                             }
 
                                             @Override
@@ -226,6 +223,26 @@ public class Slc extends AppCompatActivity {
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(arrayRequest);
 
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.page_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.back){
+
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
