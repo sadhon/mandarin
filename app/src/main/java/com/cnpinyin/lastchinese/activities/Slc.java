@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Slc extends AppCompatActivity implements View.OnClickListener{
+public class Slc extends AppCompatActivity implements View.OnClickListener {
 
     private CustomViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
@@ -52,7 +53,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener{
         setContentView(R.layout.activity_slc);
 
 
-
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
 
         mainSpinner = (Spinner) findViewById(R.id.main_spinner);
@@ -62,164 +62,92 @@ public class Slc extends AppCompatActivity implements View.OnClickListener{
         mViewPager = (CustomViewPager) findViewById(R.id.container);
         btnNext = (Button) findViewById(R.id.btn_prev);
         btnPrev = (Button) findViewById(R.id.btn_next);
-
-
-        btnPrev.setOnClickListener(this);
-
-        btnNext.setOnClickListener(this) ;
-
-
-        setSupportActionBar(toolbar);
-
-
         Intent intent = getIntent();
         final String parentEndpoint = intent.getStringExtra("parentEndPoint");
         final String childEndPoint = intent.getStringExtra("childEndPoint");
 
+        btnPrev.setOnClickListener(this);
+        btnNext.setOnClickListener(this);
+        setSupportActionBar(toolbar);
         mainSpinnerTitle.setText(childEndPoint.toUpperCase());
         String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint;
+
+        setMainSpinnerAdapterAndClickListern(url, parentEndpoint, childEndPoint);
+    }
+
+    private void setMainSpinnerAdapterAndClickListern(String url, final String parentEndpoint, final String childEndPoint) {
         JsonArrayRequest arrayRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+
+
 
                         final ArrayList<String> mainSpinnerValues = new ArrayList<>();
                         final HashMap<String, Integer> mainMapSub = new HashMap<>(); //Size against radical or stroke
                         String main = "";
                         int size = 0;
 
-                            try {
-                                for(int i = 0;  i<response.length(); i++) {
-                                    JSONObject jObj = response.getJSONObject(i);
-
-                                    if (childEndPoint.equalsIgnoreCase("stroke")){
-                                        main = jObj.getString("numberOfStroke");
-                                        size = jObj.getInt("size");
-                                    }else if(childEndPoint.equalsIgnoreCase("radical")){
-                                        main = jObj.getString("radical");
-                                        size = jObj.getInt("size");
-                                    }
-
-                                    mainSpinnerValues.add(main);
-                                    mainMapSub.put(main, size);
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject jObj = response.getJSONObject(i);
+                                if (childEndPoint.equalsIgnoreCase("stroke")) {
+                                    main = jObj.getString("numberOfStroke");
+                                    size = jObj.getInt("size");
+                                } else if (childEndPoint.equalsIgnoreCase("radical")) {
+                                    main = jObj.getString("radical");
+                                    size = jObj.getInt("size");
                                 }
-
-
-                                //Main Spinner Adapter setting and selected item control
-                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_layout, mainSpinnerValues);
-                                adapter.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
-                                mainSpinner.setAdapter(adapter);
-
-                                mainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                    @Override
-                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                                        final String mainSpinerText = mainSpinner.getSelectedItem().toString();
-                                        int size = mainMapSub.get(mainSpinnerValues.get(position));
-
-                                        temp = getRangeArrayList(size);
-
-                                        ArrayAdapter<String> subArrayApater = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_layout, temp);
-
-                                        subArrayApater.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
-
-                                        subSpiinner.setAdapter(subArrayApater);
-
-                                        subSpiinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                            @Override
-                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                                                String encodedPart = "";
-
-
-                                                //finding min value of selected range..
-                                                String selectedSpinnerText = subSpiinner.getSelectedItem().toString();
-                                                Matcher matcher = Pattern.compile("\\d+").matcher(selectedSpinnerText);
-                                                matcher.find();
-
-                                                int min = Integer.valueOf(matcher.group());
-
-                                                //determining page index
-                                                int index  = index = (min - 1) / 50;
-                                                final int currentPageIndex = index;
-
-
-                                                try {
-                                                    encodedPart = URLEncoder.encode(mainSpinerText, "UTF-8");
-                                                } catch (UnsupportedEncodingException e) {
-                                                    e.printStackTrace();
-                                                }
-
-                                                String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/"+childEndPoint+"/"+encodedPart + "?page=" + index +"&size=50";
-
-
-                                                JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
-                                                        new Response.Listener<JSONObject>() {
-                                                            @Override
-                                                            public void onResponse(JSONObject response) {
-
-                                                                try {
-                                                                    JSONArray jsonArray = response.getJSONArray("content");
-                                                                    String cnchar, pinyin, engword, sound;
-                                                                    ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
-
-
-                                                                    for(int i = 0 ; i < jsonArray.length(); i++){
-                                                                        JSONObject contentObj = jsonArray.getJSONObject(i);
-
-                                                                        cnchar = contentObj.getString("sc_char");
-                                                                        pinyin = contentObj.getString("sc_pinyin");
-                                                                        engword = contentObj.getString("sc_eng");
-                                                                        sound = contentObj.getString("sc_sound");
-
-                                                                        PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
-                                                                        pageContents.add(pageContent);
-                                                                    }
-
-                                                                    customSwipeAdapter = new CustomSwipeAdapter(Slc.this, temp.size(), pageContents, parentEndpoint);
-                                                                    mViewPager.setAdapter(customSwipeAdapter);
-
-                                                                    //set Current page
-                                                                    mViewPager.setCurrentItem(currentPageIndex, true);
-
-                                                                } catch (JSONException e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                            }
-                                                        },
-
-                                                        new Response.ErrorListener() {
-                                                            @Override
-                                                            public void onErrorResponse(VolleyError error) {
-                                                                error.printStackTrace();
-                                                                Toast.makeText(Slc.this, "" + error, Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        }
-                                                );
-
-                                                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
-                                            }
-
-                                            @Override
-                                            public void onNothingSelected(AdapterView<?> parent) {
-
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onNothingSelected(AdapterView<?> parent) {
-
-                                    }
-                                });
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Toast.makeText(Slc.this, "" + e, Toast.LENGTH_SHORT).show();
+                                mainSpinnerValues.add(main);
+                                mainMapSub.put(main, size);
                             }
+                            //Main Spinner Adapter setting and selected item control
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_layout, mainSpinnerValues);
+                            adapter.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
+                            mainSpinner.setAdapter(adapter);
+                            mainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    final String mainSpinerText = mainSpinner.getSelectedItem().toString();
+                                    int size = mainMapSub.get(mainSpinnerValues.get(position));
+                                    temp = getRangeArrayList(size);
+                                    ArrayAdapter<String> subArrayApater = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_layout, temp);
+                                    subArrayApater.setDropDownViewResource(R.layout.custom_spiner_dropdown_item);
+                                    subSpiinner.setAdapter(subArrayApater);
+                                    subSpiinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                        @Override
+                                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                            int rangeMin;
+                                            int spinnerItemIndex;
+                                            String numOrCharEncoded = "";
+                                            //finding min value of selected range..
+                                            String selectedSpinnerText = subSpiinner.getSelectedItem().toString();
+                                            Matcher matcher = Pattern.compile("\\d+").matcher(selectedSpinnerText);
+                                            matcher.find();
+                                            rangeMin = Integer.valueOf(matcher.group());
+                                            spinnerItemIndex = (rangeMin - 1) / 50;//determining page index or current page index
+                                            final int currentPageIndex = spinnerItemIndex;
+                                            try {
+                                                numOrCharEncoded = URLEncoder.encode(mainSpinerText, "UTF-8");
+                                            } catch (UnsupportedEncodingException e) {
+                                                e.printStackTrace();
+                                            }
+                                            String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint + "/" + numOrCharEncoded + "?page=" + spinnerItemIndex + "&size=50";
 
-
+                                            //Take data from server and set the required params for CustomSwipeAdapter
+                                            setCustomSwipeAdapter(url, parentEndpoint, currentPageIndex);
+                                        }
+                                        @Override
+                                        public void onNothingSelected(AdapterView<?> parent) {}
+                                    });
+                                }
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {}
+                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(Slc.this, "" + e, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 },
 
@@ -232,8 +160,47 @@ public class Slc extends AppCompatActivity implements View.OnClickListener{
         );
 
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(arrayRequest);
+    }
 
 
+    private void setCustomSwipeAdapter(String url, final String parentEndpoint, final int currentPageIndex) {
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("content");
+                            String cnchar, pinyin, engword, sound;
+                            ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject contentObj = jsonArray.getJSONObject(i);
+                                cnchar = contentObj.getString("sc_char");
+                                pinyin = contentObj.getString("sc_pinyin");
+                                engword = contentObj.getString("sc_eng");
+                                sound = contentObj.getString("sc_sound");
+                                PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
+                                pageContents.add(pageContent);
+                            }
+                            customSwipeAdapter = new CustomSwipeAdapter(Slc.this, temp.size(), pageContents, parentEndpoint);
+                            mViewPager.setAdapter(customSwipeAdapter);
+                            mViewPager.setCurrentItem(currentPageIndex, true);//set Current page
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        Toast.makeText(Slc.this, "" + error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
     }
 
 
@@ -246,13 +213,10 @@ public class Slc extends AppCompatActivity implements View.OnClickListener{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if(id == R.id.back){
-
-            finish();
+        if (id == R.id.back) {
+            finish();//back to previous page/activity
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -263,53 +227,40 @@ public class Slc extends AppCompatActivity implements View.OnClickListener{
         int high = 0;
         String range = "";
         ArrayList<String> ranges = new ArrayList<>();
-
-
         for (int i = 1; i <= size; i++) {
-
             high = min + 49;
             if (size < high) {
                 high = size;
             }
-
             range = "( " + min + "-" + high + " )";
             ranges.add(range);
-
             if (high == size) {
                 return ranges;
             }
-
             min = high + 1;
         }
-
         return ranges;
     }
 
 
-
+    //Prev and next controlling..
     public void onClick(View v) {
-       Button b = (Button) v;
+        Button b = (Button) v;
         String s = b.getText().toString();
-       int currentPage = mViewPager.getCurrentItem();
-        int index =0;
+        int currentPage = mViewPager.getCurrentItem();
+        int index = 0;
 
         index = subSpiinner.getSelectedItemPosition();
-        b.setVisibility(View.VISIBLE);
-
         if (s.equalsIgnoreCase("prev")) {
             if (index > 0) {
-                subSpiinner.setSelection(index-1);
+                subSpiinner.setSelection(index - 1);
                 mViewPager.setCurrentItem(currentPage - 1, true);
             }
-
         } else {
             if (index < temp.size() - 1) {
-                subSpiinner.setSelection(index+1);
+                subSpiinner.setSelection(index + 1);
                 mViewPager.setCurrentItem(currentPage + 1, true);
             }
         }
-
-
-
     }
 }
