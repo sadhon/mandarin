@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,19 +35,22 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Slc extends AppCompatActivity {
+public class Slc extends AppCompatActivity implements View.OnClickListener{
 
     private CustomViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
     private TextView mainSpinnerTitle, subSpinnerTitle;
     private Spinner mainSpinner, subSpiinner;
     android.support.v7.widget.Toolbar toolbar;
+    private Button btnNext, btnPrev;
+    ArrayList<String> temp = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slc);
+
 
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
@@ -56,6 +60,13 @@ public class Slc extends AppCompatActivity {
         mainSpinnerTitle = (TextView) findViewById(R.id.main_spinner_title);
         subSpinnerTitle = (TextView) findViewById(R.id.sub_spinner_title);
         mViewPager = (CustomViewPager) findViewById(R.id.container);
+        btnNext = (Button) findViewById(R.id.btn_prev);
+        btnPrev = (Button) findViewById(R.id.btn_next);
+
+
+        btnPrev.setOnClickListener(this);
+
+        btnNext.setOnClickListener(this) ;
 
 
         setSupportActionBar(toolbar);
@@ -106,7 +117,7 @@ public class Slc extends AppCompatActivity {
                                         final String mainSpinerText = mainSpinner.getSelectedItem().toString();
                                         int size = mainMapSub.get(mainSpinnerValues.get(position));
 
-                                        final ArrayList<String> temp = getRangeArrayList(size);
+                                        temp = getRangeArrayList(size);
 
                                         ArrayAdapter<String> subArrayApater = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_layout, temp);
 
@@ -272,5 +283,33 @@ public class Slc extends AppCompatActivity {
         }
 
         return ranges;
+    }
+
+
+
+    public void onClick(View v) {
+       Button b = (Button) v;
+        String s = b.getText().toString();
+       int currentPage = mViewPager.getCurrentItem();
+        int index =0;
+
+        index = subSpiinner.getSelectedItemPosition();
+        b.setVisibility(View.VISIBLE);
+
+        if (s.equalsIgnoreCase("prev")) {
+            if (index > 0) {
+                subSpiinner.setSelection(index-1);
+                mViewPager.setCurrentItem(currentPage - 1, true);
+            }
+
+        } else {
+            if (index < temp.size() - 1) {
+                subSpiinner.setSelection(index+1);
+                mViewPager.setCurrentItem(currentPage + 1, true);
+            }
+        }
+
+
+
     }
 }

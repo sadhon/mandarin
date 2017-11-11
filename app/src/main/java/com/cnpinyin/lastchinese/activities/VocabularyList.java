@@ -98,9 +98,7 @@ public class VocabularyList extends AppCompatActivity
 
         //initial setAdapter for ExpandableListView here
         exp_listview.setAdapter(adapter);
-
         //Here group click listener will be inseted..
-
 
         exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
@@ -116,7 +114,7 @@ public class VocabularyList extends AppCompatActivity
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
-                 /*when enpoint is "bct" then no need to show child directly go to the content page */
+                 /*when endpoint is "bct" then no need to show child directly go to the content page */
 
 
                 final String parentEndPoint = map.get(headings.get(groupPosition));
@@ -137,11 +135,7 @@ public class VocabularyList extends AppCompatActivity
                     } else {
 
                         if (parentEndPoint.equals("sc") && childList.get(headings.get(groupPosition)).size() > 0) {
-
                             provideParams(parentEndPoint, headings, childList, new ArrayList<Integer>());
-
-
-
                         } else {
 
                             String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
