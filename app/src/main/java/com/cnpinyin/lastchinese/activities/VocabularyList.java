@@ -1,5 +1,6 @@
 package com.cnpinyin.lastchinese.activities;
 
+import android.graphics.Color;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -8,7 +9,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +42,7 @@ public class VocabularyList extends AppCompatActivity
     private ExpandableListAdapter adapter;
     private HashMap<String, String> sclMap = new HashMap<>();
     HashMap<String, String> map = new HashMap<>();
-    private  int lastExpandedPosition = -1;
+    private int lastExpandedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class VocabularyList extends AppCompatActivity
         map.put("Single Character List", "sc");
 
 
-        sclMap.put("By Range","range");
+        sclMap.put("By Range", "range");
         sclMap.put("By Stroke No", "stroke");
         sclMap.put("By Radical", "radical");
         sclMap.put("By Pinyin", "pinyin");
@@ -191,11 +191,8 @@ public class VocabularyList extends AppCompatActivity
 
                                                 //Update ExpandableListAdapter..
                                                 adapter.update(childList);
-
-                                                //Setting adapter with expandable list view
-                                                exp_listview.setAdapter(adapter);
+                                                adapter.notifyDataSetChanged();
                                                 exp_listview.expandGroup(groupPosition);
-
                                                 provideParams(parentEndPoint, headings, childList, childSizeList);
 
 
@@ -242,15 +239,9 @@ public class VocabularyList extends AppCompatActivity
         exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-
-
                 String childValue = childList.get(headings.get(groupPosition))
                         .get(childPosition);
-
-                Log.e("child", childValue);
-
-                if(!parentEndPoint.equalsIgnoreCase("sc"))
-                {
+                if (!parentEndPoint.equalsIgnoreCase("sc")) {
                     int childSize = childSizeList.get(childPosition);
 
                     Intent intent = new Intent(getApplicationContext(),
@@ -260,13 +251,13 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("contentSize", childSize);
 
                     startActivity(intent);
-                }else{
+                } else {
 
-                    if(childValue.equalsIgnoreCase("By Range")){
+                    if (childValue.equalsIgnoreCase("By Range")) {
 
                         //Fetching size for Range star new Activity
                         String url = AllConstans.SERVER_VOC_URL + "sc";
-                        JsonObjectRequest objectRequest =  new JsonObjectRequest(Request.Method.GET, url, (String) null,
+                        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
@@ -297,19 +288,14 @@ public class VocabularyList extends AppCompatActivity
 
                         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
 
-                    }else {
+                    } else {
 
                         //change childvalue to childEndPoint
                         childValue = sclMap.get(childValue);
                         Intent intent = new Intent(getApplicationContext(), Slc.class);
                         intent.putExtra("parentEndPoint", parentEndPoint);
                         intent.putExtra("childEndPoint", childValue);
-
-
-                        Log.e("url", AllConstans.SERVER_VOC_URL+parentEndPoint+"/"+childValue);
-
-                        if(childValue!=null)
-                            startActivity(intent);
+                        startActivity(intent);
                     }
                 }
 

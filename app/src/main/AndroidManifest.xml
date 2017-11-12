@@ -34,11 +34,16 @@
             android:label="cnpinyin.com"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
 
-        <service android:name=".services.MediaPlayerService"
-            android:label=""/>
+        <service
+            android:name=".services.MediaPlayerService"
+            android:label="" />
 
-        <activity android:name=".activities.Slc"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activities.Slc"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.ProductLIst" />
+        <activity android:name=".activities.SentencesAndDialogue" />
+        <activity android:name=".activities.SentencePageSlider"></activity>
     </application>
 
 </manifest>

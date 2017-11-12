@@ -18,9 +18,34 @@
     </string-array>
 
 
-
-
     <string-array name="names">
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Level</item>
+        <item> By Lesson</item>
+        <item> By HSK</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Level</item>
+        <item> By Lesson</item>
+        <item> By HSK</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Topics</item>
+        <item> By Level</item>
+        <item> By Lesson</item>
+        <item> By HSK</item>
+        <item> Single </item>
+        <item> By Topics</item>
+    </string-array>
+
+    <string-array name="sntence_parent_items">
+        <item>By Topics</item>
+    </string-array>
+
+    <string-array name="sentece_child_itema">
         <item> By Topics</item>
         <item> By Topics</item>
         <item> By Topics</item>
@@ -50,5 +75,8 @@
     <string name="prev"><![CDATA[<]]></string>
     <string name="cross_sing">X</string>
     <string name="back">Back</string>
+    <string name="our_products">Our Products</string>
+    <string name="vocabularylist">Vocabulary List</string>
+    <string name="senterces_dialogue"><![CDATA[Sentense & Dialogues]]></string>
 
 </resources>

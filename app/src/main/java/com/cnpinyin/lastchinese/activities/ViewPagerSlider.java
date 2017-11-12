@@ -1,12 +1,10 @@
 package com.cnpinyin.lastchinese.activities;
 
 import android.content.Intent;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,9 +74,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
 
         size = intent.getIntExtra("contentSize", 0);
-
-        // Log.e("endpoint", parentEndPoint);
-
 
         // child = child.toUpperCase();
         toolBarTitle.setText(child.toUpperCase());

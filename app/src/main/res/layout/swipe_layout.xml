@@ -12,4 +12,12 @@
         android:layout_height="wrap_content"
         android:text="Hello..." />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/arrow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/arrow_shape"
+        android:rotation="270" />
+
 </LinearLayout>

@@ -51,10 +51,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slc);
-
-
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-
         mainSpinner = (Spinner) findViewById(R.id.main_spinner);
         subSpiinner = (Spinner) findViewById(R.id.sub_spinner);
         mainSpinnerTitle = (TextView) findViewById(R.id.main_spinner_title);
@@ -80,14 +77,10 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-
-
-
                         final ArrayList<String> mainSpinnerValues = new ArrayList<>();
                         final HashMap<String, Integer> mainMapSub = new HashMap<>(); //Size against radical or stroke
                         String main = "";
                         int size = 0;
-
                         try {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject jObj = response.getJSONObject(i);

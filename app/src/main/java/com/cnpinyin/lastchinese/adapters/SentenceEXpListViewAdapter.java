@@ -13,20 +13,23 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by inspiron on 8/24/2017.
+ * Created by User on 11/12/2017.
  */
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+public class SentenceEXpListViewAdapter extends BaseExpandableListAdapter {
+
+
 
     private List<String> header_titles;
     private HashMap<String, List<String>> child_titles;
     private Context ctx;
 
-    public ExpandableListAdapter(List<String> header_titles, HashMap<String, List<String>> child_titles, Context ctx) {
+    public SentenceEXpListViewAdapter(List<String> header_titles, HashMap<String, List<String>> child_titles, Context ctx) {
         this.header_titles = header_titles;
         this.child_titles = child_titles;
         this.ctx = ctx;
     }
+
 
     static class ViewHolder {
         TextView textView;
@@ -96,16 +99,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
-        ViewHolder holder;
+        ExpandableListAdapter.ViewHolder holder;
         String child_title = (String) getChild(groupPosition, childPosition);
         if (convertView == null) {
-            holder = new ViewHolder();
+            holder = new ExpandableListAdapter.ViewHolder();
             LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.child_layout, parent, false);
             holder.textView = (TextView) convertView.findViewById(R.id.child_header);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (ExpandableListAdapter.ViewHolder) convertView.getTag();
         }
 
         holder.textView.setText(child_title);
