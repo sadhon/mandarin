@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cnpinyin.lastchinese.R;
-import com.cnpinyin.lastchinese.activities.DialogueImageSlider;
+import com.cnpinyin.lastchinese.activities.PopupForImage;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.PageContent;
 
@@ -31,7 +30,7 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
     private ArrayList<PageContent> pageContents;
     private Context ctx;
     MediaPlayer mediaPlayer;
-
+    
     Topic3PageRecyclerViewAdapter(Context ctx, ArrayList<PageContent> pageContents) {
         this.pageContents = pageContents;
         this.ctx = ctx;
@@ -39,10 +38,8 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
 
     @Override
     public Topic3PageRecyclerViewAdapter.PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.topic3_page_card_view, parent, false);
         return new Topic3PageRecyclerViewAdapter.PageViewHolder(view);
-
     }
 
     @Override
@@ -56,7 +53,7 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
         holder.writing_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ctx, DialogueImageSlider.class);
+                Intent intent = new Intent(ctx, PopupForImage.class);
                 intent.putExtra("cnchar", content.getCnchar());
                 ctx.startActivity(intent);
             }
@@ -105,7 +102,6 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
                 });
             }
         });
-
 
         //Image Loading
         Glide.with(ctx).load(AllConstans.SERVER_BASE_JEPG_IMAGE_URL + content.getCnchar() + ".jpeg").into(holder.topic_img);

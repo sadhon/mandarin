@@ -61,13 +61,11 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
         Intent intent = getIntent();
         final String parentEndpoint = intent.getStringExtra("parentEndPoint");
         final String childEndPoint = intent.getStringExtra("childEndPoint");
-
         btnPrev.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         setSupportActionBar(toolbar);
         mainSpinnerTitle.setText(childEndPoint.toUpperCase());
         String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint;
-
         setMainSpinnerAdapterAndClickListern(url, parentEndpoint, childEndPoint);
     }
 
@@ -121,7 +119,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                                             } catch (UnsupportedEncodingException e) {
                                                 e.printStackTrace();
                                             }
-
                                             String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint + "/" + numOrCharEncoded + "?page=" + spinnerItemIndex + "&size=50";
                                             //Take data from server and set the required params for CustomSwipeAdapter
                                             setCustomSwipeAdapter(url, parentEndpoint, currentPageIndex);
@@ -139,18 +136,14 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                         }
                     }
                 },
-
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
                     }
                 }
         );
-
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(arrayRequest);
     }
-
 
     private void setCustomSwipeAdapter(String url, final String parentEndpoint, final int currentPageIndex) {
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
@@ -178,7 +171,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                         }
                     }
                 },
-
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -228,8 +220,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
         return ranges;
     }
 
-
-    //Prev and next controlling..
     public void onClick(View v) {
         Button b = (Button) v;
         String s = b.getText().toString();

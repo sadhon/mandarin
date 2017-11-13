@@ -9,17 +9,17 @@ import android.widget.Button;
 import com.cnpinyin.lastchinese.R;
 
 public class ProductLIst extends AppCompatActivity {
-    Button btnVoc, btnSen;
+    Button btnVocList, btnSenAndDia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
 
-        btnVoc = (Button) findViewById(R.id.btn_voc);
-        btnSen = (Button) findViewById(R.id.btn_sen);
+        btnVocList = (Button) findViewById(R.id.btn_voc);
+        btnSenAndDia = (Button) findViewById(R.id.btn_sen);
 
-        btnVoc.setOnClickListener(new View.OnClickListener() {
+        btnVocList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), VocabularyList.class));
@@ -27,7 +27,7 @@ public class ProductLIst extends AppCompatActivity {
             }
         });
 
-        btnSen.setOnClickListener(new View.OnClickListener() {
+        btnSenAndDia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), SentencesAndDialogue.class));

@@ -30,7 +30,7 @@
             android:label="@string/title_activity_tabed"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.DialogueImageSlider"
+            android:name=".activities.PopupForImage"
             android:label="cnpinyin.com"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
 
@@ -38,8 +38,10 @@
             android:name=".activities.Slc"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.ProductLIst" />
-        <activity android:name=".activities.SentencesAndDialogue" />
-        <activity android:name=".activities.SentencePageSlider"></activity>
+        <activity
+            android:name=".activities.SentencesAndDialogue"
+            android:label="Sentences And Dialogues" />
+        <activity android:name=".activities.SentencePageSlider"/>
     </application>
 
 </manifest>

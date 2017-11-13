@@ -12,7 +12,5 @@ public class SentencePageSlider extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sentence_row_card_view);
 
-
-
     }
 }

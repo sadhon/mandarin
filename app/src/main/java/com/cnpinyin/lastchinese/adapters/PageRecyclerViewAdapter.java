@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cnpinyin.lastchinese.R;
-import com.cnpinyin.lastchinese.activities.DialogueImageSlider;
+import com.cnpinyin.lastchinese.activities.PopupForImage;
 import com.cnpinyin.lastchinese.constants.AllConstans;
 import com.cnpinyin.lastchinese.extras.PageContent;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -56,7 +52,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
         holder.writing_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ctx, DialogueImageSlider.class);
+                Intent intent = new Intent(ctx, PopupForImage.class);
                 intent.putExtra("cnchar", content.getCnchar());
                 ctx.startActivity(intent);
             }

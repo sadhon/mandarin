@@ -35,8 +35,6 @@ public class SentencesAndDialogue extends AppCompatActivity {
         final HashMap<String, List<String>> relatedChildList = new HashMap<>();
         relatedChildList.put(parentList.get(0), new ArrayList<String>(Arrays.asList(childItems)) );
 
-
-
         sentenceEXpListViewAdapter = new SentenceEXpListViewAdapter(parentList, relatedChildList, this);
 
         expListView.setAdapter(sentenceEXpListViewAdapter);
@@ -45,7 +43,6 @@ public class SentencesAndDialogue extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 
                 String child  = relatedChildList.get(parentList.get(groupPosition)).get(childPosition);
-
 
                 String parentItem  = parentList.get(0);
                 Toast.makeText(SentencesAndDialogue.this, "" + child, Toast.LENGTH_SHORT).show();

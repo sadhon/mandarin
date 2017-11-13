@@ -37,8 +37,6 @@ import java.util.regex.Pattern;
 
 
 public class ViewPagerSlider extends AppCompatActivity implements View.OnClickListener {
-
-
     private android.support.v4.view.ViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
     private Toolbar toolbar;
@@ -59,7 +57,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         mViewPager = (android.support.v4.view.ViewPager) findViewById(R.id.container);
         prev = (Button) findViewById(R.id.btn_next);
         next = (Button) findViewById(R.id.btn_prev);
-
         //adding a new fornt
         toolBarTitle.setTypeface(TypeFaceProvider.getTypeFace(ViewPagerSlider.this, "orangejuice"));
         setSupportActionBar(toolbar);
@@ -68,10 +65,8 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         final String parentEndPoint = intent.getStringExtra("parentEndPoint");
         size = intent.getIntExtra("contentSize", 0);
         toolBarTitle.setText(childEndPoint.toUpperCase());
-
         next.setOnClickListener(this);
         prev.setOnClickListener(this);
-
         if (childEndPoint.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") || parentEndPoint.equalsIgnoreCase("sc")) {
             int numberOfRangeItems = 50;
             ranges = getSpinnerRanges(size, numberOfRangeItems);
@@ -94,10 +89,8 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 }
                 final int currentPageIndex = index;
                 String cleanChildEndPoint = childEndPoint.replaceAll(" ", "%20");
-
                 //When item number of page is 20
                 String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "/" + cleanChildEndPoint + "?page=" + index;
-
                 //When item number of page is 20
                 if (parentEndPoint.equalsIgnoreCase("hsk")) {
                     server_url += "&size=50";

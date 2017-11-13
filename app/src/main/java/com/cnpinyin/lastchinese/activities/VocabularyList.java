@@ -36,7 +36,6 @@ import java.util.List;
 
 public class VocabularyList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
     private ExpandableListView exp_listview;
     private ExpandableListAdapter adapter;
     private HashMap<String, String> parentItemToParentEndPoint = new HashMap<>();
@@ -69,17 +68,14 @@ public class VocabularyList extends AppCompatActivity
         ArrayList<String> sclChildItemList = new ArrayList<>(Arrays.asList(sclChildItems));
         final List<String> vocabularyList = new ArrayList<String>(Arrays.asList(vocabularyItems));
         final HashMap<String, List<String>> childListUnderVocItem = new HashMap<>();
-
         //FirstLy set all childList empty except the Last
         for (int i = 0; i < vocabularyList.size() - 1; i++) {
             childListUnderVocItem.put(vocabularyList.get(i), new ArrayList<String>());
         }
         //setting Single Character List default as it is static
         childListUnderVocItem.put(vocabularyList.get(vocabularyList.size() - 1), sclChildItemList);
-
         adapter = new ExpandableListAdapter(vocabularyList, childListUnderVocItem, getApplicationContext());
         exp_listview.setAdapter(adapter);
-
         exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
             public void onGroupExpand(int groupPosition) {
@@ -95,7 +91,6 @@ public class VocabularyList extends AppCompatActivity
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
                 final String parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
-
                 if (parentEndPoint.equals("bct")) {
                     Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
                     intent.putExtra("parentEndPoint", parentEndPoint);
@@ -107,7 +102,6 @@ public class VocabularyList extends AppCompatActivity
                     if (parent.isGroupExpanded(groupPosition)) {
                         exp_listview.collapseGroup(groupPosition);
                     } else {
-
                         int childItemsNumber = childListUnderVocItem.get(vocabularyList.get(groupPosition)).size();
                         if (parentEndPoint.equals("sc") && childItemsNumber > 0) {
                             provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
@@ -131,11 +125,9 @@ public class VocabularyList extends AppCompatActivity
                                                 int childSizeValue;
                                                 for (int i = 0; i < response.length(); i++) {
                                                     JSONObject singleObj = response.getJSONObject(i);
-
                                                     /* Determining  single childEndPoint value and size
                                                     as Sometime it doesn't get keys serially so this solution
                                                     obviously only two keys are there.. and one is size*/
-
                                                     if (keysList.get(0).equalsIgnoreCase("size")) {
                                                         childValue = singleObj.getString(keysList.get(1));
                                                         childSizeValue = singleObj.getInt(keysList.get(0));
@@ -262,7 +254,6 @@ public class VocabularyList extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
