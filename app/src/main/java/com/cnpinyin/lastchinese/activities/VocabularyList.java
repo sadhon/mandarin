@@ -40,8 +40,8 @@ public class VocabularyList extends AppCompatActivity
 
     private ExpandableListView exp_listview;
     private ExpandableListAdapter adapter;
-    private HashMap<String, String> sclMap = new HashMap<>();
-    HashMap<String, String> map = new HashMap<>();
+    private HashMap<String, String> parentItemToEndPoint = new HashMap<>();
+    private HashMap<String, String> slcItemToEndPoint = new HashMap<>();
     private int lastExpandedPosition = -1;
 
     @Override
@@ -50,26 +50,20 @@ public class VocabularyList extends AppCompatActivity
         setContentView(R.layout.vocabulary_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         exp_listview = (ExpandableListView) findViewById(R.id.expnadable_listview);
-
-        //toolbar setting
         setSupportActionBar(toolbar);
-        //Hasmap for dynamically getting url endpoint
+        parentItemToEndPoint.put("By Topics Part 1", "topic");
+        parentItemToEndPoint.put("By Topics Part 2", "topic2");
+        parentItemToEndPoint.put("By Topics Part3 + Image", "topic3");
+        parentItemToEndPoint.put("By Level", "level");
+        parentItemToEndPoint.put("By Lesson", "lesson");
+        parentItemToEndPoint.put("By HSK", "hsk");
+        parentItemToEndPoint.put("By BCT", "bct");
+        parentItemToEndPoint.put("Single Character List", "sc");
 
-
-        map.put("By Topics Part 1", "topic");
-        map.put("By Topics Part 2", "topic2");
-        map.put("By Topics Part3 + Image", "topic3");
-        map.put("By Level", "level");
-        map.put("By Lesson", "lesson");
-        map.put("By HSK", "hsk");
-        map.put("By BCT", "bct");
-        map.put("Single Character List", "sc");
-
-
-        sclMap.put("By Range", "range");
-        sclMap.put("By Stroke No", "stroke");
-        sclMap.put("By Radical", "radical");
-        sclMap.put("By Pinyin", "pinyin");
+        slcItemToEndPoint.put("By Range", "range");
+        slcItemToEndPoint.put("By Stroke No", "stroke");
+        slcItemToEndPoint.put("By Radical", "radical");
+        slcItemToEndPoint.put("By Pinyin", "pinyin");
 
 
         final String[] sclArray = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
@@ -117,7 +111,7 @@ public class VocabularyList extends AppCompatActivity
                  /*when endpoint is "bct" then no need to show child directly go to the content page */
 
 
-                final String parentEndPoint = map.get(headings.get(groupPosition));
+                final String parentEndPoint = parentItemToEndPoint.get(headings.get(groupPosition));
 
                 if (parentEndPoint.equals("bct")) {
                     Intent intent = new Intent(getApplicationContext(),
@@ -291,7 +285,7 @@ public class VocabularyList extends AppCompatActivity
                     } else {
 
                         //change childvalue to childEndPoint
-                        childValue = sclMap.get(childValue);
+                        childValue = slcItemToEndPoint.get(childValue);
                         Intent intent = new Intent(getApplicationContext(), Slc.class);
                         intent.putExtra("parentEndPoint", parentEndPoint);
                         intent.putExtra("childEndPoint", childValue);
