@@ -36,48 +36,40 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         this.child_titles = child_titles;
     }
 
-
     @Override
     public int getGroupCount() {
         return header_titles.size();
     }
-
 
     @Override
     public int getChildrenCount(int groupPosition) {
         return child_titles.get(header_titles.get(groupPosition)).size();
     }
 
-
     @Override
     public Object getGroup(int groupPosition) {
         return header_titles.get(groupPosition);
     }
-
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
         return child_titles.get(header_titles.get(groupPosition)).get(childPosition);
     }
 
-
     @Override
     public long getGroupId(int groupPosition) {
         return groupPosition;
     }
-
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
         return childPosition;
     }
 
-
     @Override
     public boolean hasStableIds() {
         return false;
     }
-
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
@@ -92,10 +84,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-
         ViewHolder holder;
         String child_title = (String) getChild(groupPosition, childPosition);
         if (convertView == null) {
@@ -107,9 +97,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
         holder.textView.setText(child_title);
-
         return convertView;
     }
 

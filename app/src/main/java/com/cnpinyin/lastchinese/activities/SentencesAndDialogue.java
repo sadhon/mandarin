@@ -50,12 +50,7 @@ public class SentencesAndDialogue extends AppCompatActivity {
                 String parentItem  = parentList.get(0);
                 Toast.makeText(SentencesAndDialogue.this, "" + child, Toast.LENGTH_SHORT).show();
 
-
-
                 startActivity(new Intent(getApplicationContext(), SentencePageSlider.class));
-
-
-
 
                 return false;
             }

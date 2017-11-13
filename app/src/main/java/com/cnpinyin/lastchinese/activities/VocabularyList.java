@@ -132,7 +132,7 @@ public class VocabularyList extends AppCompatActivity
                                                 for (int i = 0; i < response.length(); i++) {
                                                     JSONObject singleObj = response.getJSONObject(i);
 
-                                                    /* Determining  single child value and size
+                                                    /* Determining  single childEndPoint value and size
                                                     as Sometime it doesn't get keys serially so this solution
                                                     obviously only two keys are there.. and one is size*/
 

@@ -46,7 +46,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
     private Button btnNext, btnPrev;
     ArrayList<String> temp = new ArrayList<>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,22 +110,19 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                                         @Override
                                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                             int rangeMin;
+                                            int itemsPerPage = 50;
                                             int spinnerItemIndex;
                                             String numOrCharEncoded = "";
-                                            //finding min value of selected range..
-                                            String selectedSpinnerText = subSpiinner.getSelectedItem().toString();
-                                            Matcher matcher = Pattern.compile("\\d+").matcher(selectedSpinnerText);
-                                            matcher.find();
-                                            rangeMin = Integer.valueOf(matcher.group());
-                                            spinnerItemIndex = (rangeMin - 1) / 50;//determining page index or current page index
+                                            rangeMin = getRangeMinimumNum();
+                                            spinnerItemIndex = (rangeMin - 1) / itemsPerPage;
                                             final int currentPageIndex = spinnerItemIndex;
                                             try {
                                                 numOrCharEncoded = URLEncoder.encode(mainSpinerText, "UTF-8");
                                             } catch (UnsupportedEncodingException e) {
                                                 e.printStackTrace();
                                             }
-                                            String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint + "/" + numOrCharEncoded + "?page=" + spinnerItemIndex + "&size=50";
 
+                                            String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint + "/" + numOrCharEncoded + "?page=" + spinnerItemIndex + "&size=50";
                                             //Take data from server and set the required params for CustomSwipeAdapter
                                             setCustomSwipeAdapter(url, parentEndpoint, currentPageIndex);
                                         }
@@ -161,7 +157,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
                         try {
                             JSONArray jsonArray = response.getJSONArray("content");
                             String cnchar, pinyin, engword, sound;
@@ -192,7 +187,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     }
                 }
         );
-
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
     }
 
@@ -214,7 +208,6 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
     }
 
 
-    //getting sub spinner itemList
     private ArrayList<String> getRangeArrayList(int size) {
         int min = 1;
         int high = 0;
@@ -255,5 +248,14 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 mViewPager.setCurrentItem(currentPage + 1, true);
             }
         }
+    }
+
+    public int getRangeMinimumNum() {
+        int rangeMin;
+        String selectedSpinnerText = subSpiinner.getSelectedItem().toString();
+        Matcher matcher = Pattern.compile("\\d+").matcher(selectedSpinnerText);
+        matcher.find();
+        rangeMin = Integer.valueOf(matcher.group());
+        return rangeMin;
     }
 }

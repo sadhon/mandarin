@@ -40,20 +40,16 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
         this.ctx = ctx;
     }
 
-
     @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.all_page_card_view, parent, false);
         return new PageViewHolder(view);
-
     }
 
     @Override
     public void onBindViewHolder(final PageViewHolder holder, final int position) {
 
         final PageContent content = pageContents.get(position);
-
         holder.page_text.setText(content.getCnchar());
         holder.translation.setText(content.getEngword());
         holder.pinyin.setText(content.getCnpinyin());
@@ -66,26 +62,17 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
             }
         });
 
-
-
-        //sound related code begins here..
-        //sound file url
-
-        //button for playing sound
         holder.sound_icon.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
                 try {
                     String query = URLEncoder.encode(pageContents.get(position).getSoundfile(), "utf-8");
                     String url = AllConstans.SERVER_BASE_SOUND_URL + query;
                     mediaPlayer.setDataSource(url);
                     mediaPlayer.prepareAsync();
-                    //mediaPlayer.prepare();
                     holder.sound_icon.setEnabled(false);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -113,9 +100,6 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
             }
         });
     }
-
-
-
 
     @Override
     public int getItemCount() {

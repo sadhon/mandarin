@@ -20,7 +20,6 @@ public class MySingleton {
     private MySingleton(Context context) {
         mCtx = context;
         mRequestQueue = getRequestQueue();
-
     }
 
     public static synchronized MySingleton getInstance(Context context) {
@@ -38,9 +37,7 @@ public class MySingleton {
         }
         return mRequestQueue;
     }
-
     public <T> void addToRequestQueue(Request<T> req) {
         getRequestQueue().add(req);
     }
-
 }

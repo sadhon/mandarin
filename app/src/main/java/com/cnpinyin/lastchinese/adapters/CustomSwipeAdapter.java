@@ -56,7 +56,6 @@ public class CustomSwipeAdapter extends PagerAdapter {
         if(parentEndPoint.equalsIgnoreCase("topic3")){
             Topic3PageRecyclerViewAdapter topic3PageRecyclerViewAdapter = new Topic3PageRecyclerViewAdapter(ctx, contents);
             recyclerView.setAdapter(topic3PageRecyclerViewAdapter);
-
         }else {
             PageRecyclerViewAdapter pageRecyclerViewAdapter = new PageRecyclerViewAdapter(ctx, contents);
             recyclerView.setAdapter(pageRecyclerViewAdapter);

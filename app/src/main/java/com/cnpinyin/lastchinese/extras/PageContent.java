@@ -5,21 +5,16 @@ package com.cnpinyin.lastchinese.extras;
  */
 
 public class PageContent {
-
     private String cnpinyin;
     private String engword;
     private String cnchar;
     private String soundfile;
 
-
     public PageContent(String cnpinyin, String engword, String cnchar, String soundfile){
-
         this.setCnpinyin(cnpinyin);
         this.setEngword(engword);
         this.setCnchar(cnchar);
         this.setSoundfile(soundfile);
-
-
     }
 
     public String getSoundfile() {
@@ -33,7 +28,6 @@ public class PageContent {
     public String getCnchar() {
         return cnchar;
     }
-
 
     public void setCnchar(String cnchar) {
         this.cnchar = cnchar;

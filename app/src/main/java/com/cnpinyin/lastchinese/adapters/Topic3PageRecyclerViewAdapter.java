@@ -62,8 +62,6 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
             }
         });
 
-
-        //button for playing sound
         holder.sound_icon.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -111,9 +109,7 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
 
         //Image Loading
         Glide.with(ctx).load(AllConstans.SERVER_BASE_JEPG_IMAGE_URL + content.getCnchar() + ".jpeg").into(holder.topic_img);
-
     }
-
 
     @Override
     public int getItemCount() {
