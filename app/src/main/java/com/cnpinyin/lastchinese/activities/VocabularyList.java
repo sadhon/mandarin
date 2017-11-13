@@ -1,6 +1,5 @@
 package com.cnpinyin.lastchinese.activities;
 
-import android.graphics.Color;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -40,8 +39,8 @@ public class VocabularyList extends AppCompatActivity
 
     private ExpandableListView exp_listview;
     private ExpandableListAdapter adapter;
-    private HashMap<String, String> parentItemToEndPoint = new HashMap<>();
-    private HashMap<String, String> slcItemToEndPoint = new HashMap<>();
+    private HashMap<String, String> parentItemToParentEndPoint = new HashMap<>();
+    private HashMap<String, String> slcItemToChildEndPoint = new HashMap<>();
     private int lastExpandedPosition = -1;
 
     @Override
@@ -51,48 +50,35 @@ public class VocabularyList extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         exp_listview = (ExpandableListView) findViewById(R.id.expnadable_listview);
         setSupportActionBar(toolbar);
-        parentItemToEndPoint.put("By Topics Part 1", "topic");
-        parentItemToEndPoint.put("By Topics Part 2", "topic2");
-        parentItemToEndPoint.put("By Topics Part3 + Image", "topic3");
-        parentItemToEndPoint.put("By Level", "level");
-        parentItemToEndPoint.put("By Lesson", "lesson");
-        parentItemToEndPoint.put("By HSK", "hsk");
-        parentItemToEndPoint.put("By BCT", "bct");
-        parentItemToEndPoint.put("Single Character List", "sc");
+        parentItemToParentEndPoint.put("By Topics Part 1", "topic");
+        parentItemToParentEndPoint.put("By Topics Part 2", "topic2");
+        parentItemToParentEndPoint.put("By Topics Part3 + Image", "topic3");
+        parentItemToParentEndPoint.put("By Level", "level");
+        parentItemToParentEndPoint.put("By Lesson", "lesson");
+        parentItemToParentEndPoint.put("By HSK", "hsk");
+        parentItemToParentEndPoint.put("By BCT", "bct");
+        parentItemToParentEndPoint.put("Single Character List", "sc");
 
-        slcItemToEndPoint.put("By Range", "range");
-        slcItemToEndPoint.put("By Stroke No", "stroke");
-        slcItemToEndPoint.put("By Radical", "radical");
-        slcItemToEndPoint.put("By Pinyin", "pinyin");
+        slcItemToChildEndPoint.put("By Range", "range");
+        slcItemToChildEndPoint.put("By Stroke No", "stroke");
+        slcItemToChildEndPoint.put("By Radical", "radical");
+        slcItemToChildEndPoint.put("By Pinyin", "pinyin");
 
+        final String[] sclChildItems = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
+        String[] vocabularyItems = getResources().getStringArray(R.array.heading_items);
+        ArrayList<String> sclChildItemList = new ArrayList<>(Arrays.asList(sclChildItems));
+        final List<String> vocabularyList = new ArrayList<String>(Arrays.asList(vocabularyItems));
+        final HashMap<String, List<String>> childListUnderVocItem = new HashMap<>();
 
-        final String[] sclArray = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
-
-        ArrayList<String> scl = new ArrayList<>(Arrays.asList(sclArray));
-
-        //Vocbulary Main Items example: topic , lesson etc
-        String[] heading_items = getResources().getStringArray(R.array.heading_items);
-
-        //Converting array into arrayList
-        final List<String> headings = new ArrayList<String>(Arrays.asList(heading_items));
-
-        //Sub Item List under Main Item. example: conversatoin, verb etc under topic
-        final HashMap<String, List<String>> childList = new HashMap<String, List<String>>();
-
-        //set sub itemList empty except single character list coz data will load dynamically from server
-        for (int i = 0; i < headings.size() - 1; i++) {
-            childList.put(headings.get(i), new ArrayList<String>());
+        //FirstLy set all childList empty except the Last
+        for (int i = 0; i < vocabularyList.size() - 1; i++) {
+            childListUnderVocItem.put(vocabularyList.get(i), new ArrayList<String>());
         }
-
         //setting Single Character List default as it is static
-        childList.put(headings.get(headings.size() - 1), scl);
+        childListUnderVocItem.put(vocabularyList.get(vocabularyList.size() - 1), sclChildItemList);
 
-        //provided here Main Item List , hashmap of child Item List and applicationContext
-        adapter = new ExpandableListAdapter(headings, childList, getApplicationContext());
-
-        //initial setAdapter for ExpandableListView here
+        adapter = new ExpandableListAdapter(vocabularyList, childListUnderVocItem, getApplicationContext());
         exp_listview.setAdapter(adapter);
-        //Here group click listener will be inseted..
 
         exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
@@ -108,19 +94,13 @@ public class VocabularyList extends AppCompatActivity
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
-                 /*when endpoint is "bct" then no need to show child directly go to the content page */
-
-
-                final String parentEndPoint = parentItemToEndPoint.get(headings.get(groupPosition));
+                final String parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
 
                 if (parentEndPoint.equals("bct")) {
-                    Intent intent = new Intent(getApplicationContext(),
-                            ViewPagerSlider.class);
-
+                    Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
                     intent.putExtra("parentEndPoint", parentEndPoint);
                     intent.putExtra("pageTitle", "BCT");
                     intent.putExtra("contentSize", 1035);
-
                     startActivity(intent);
                 } else {
 
@@ -128,43 +108,33 @@ public class VocabularyList extends AppCompatActivity
                         exp_listview.collapseGroup(groupPosition);
                     } else {
 
-                        if (parentEndPoint.equals("sc") && childList.get(headings.get(groupPosition)).size() > 0) {
-                            provideParams(parentEndPoint, headings, childList, new ArrayList<Integer>());
+                        int childItemsNumber = childListUnderVocItem.get(vocabularyList.get(groupPosition)).size();
+                        if (parentEndPoint.equals("sc") && childItemsNumber > 0) {
+                            provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
                         } else {
-
                             String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
-                            // Log.e("parent1", parentEndPoint);
                             JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                                     new Response.Listener<JSONArray>() {
                                         @Override
                                         public void onResponse(JSONArray response) {
-
                                             List<String> childValueList = new ArrayList<String>();
                                             final List<Integer> childSizeList = new ArrayList<>();
                                             List<String> keysList = new ArrayList<String>();
-
                                             try {
-                                                //Determining dynamically keys from the first object
-
                                                 JSONObject firstJSONObject = response.getJSONObject(0);
                                                 Iterator keysIterator = firstJSONObject.keys();
-
                                                 while (keysIterator.hasNext()) {
                                                     String key = (String) keysIterator.next();
                                                     keysList.add(key);
-
                                                 }
-
-                                                //Determining child values and sizes using the above keys
                                                 String childValue;
                                                 int childSizeValue;
-
                                                 for (int i = 0; i < response.length(); i++) {
-                                                    // Get current json object
                                                     JSONObject singleObj = response.getJSONObject(i);
 
-                                                    // Determining  single child value and size
-                                                    //as Sometime it doesn't get keys serially so this solution
+                                                    /* Determining  single child value and size
+                                                    as Sometime it doesn't get keys serially so this solution
+                                                    obviously only two keys are there.. and one is size*/
 
                                                     if (keysList.get(0).equalsIgnoreCase("size")) {
                                                         childValue = singleObj.getString(keysList.get(1));
@@ -173,30 +143,20 @@ public class VocabularyList extends AppCompatActivity
                                                         childValue = singleObj.getString(keysList.get(0));
                                                         childSizeValue = singleObj.getInt(keysList.get(1));
                                                     }
-
-                                                    //adding single child value and size in respective List
                                                     childValueList.add(childValue);
                                                     childSizeList.add(childSizeValue);
                                                 }
-
-                                                //Adding child value list against each parent
-                                                childList.put(headings.get(groupPosition), childValueList);
-
-
-                                                //Update ExpandableListAdapter..
-                                                adapter.update(childList);
+                                                String vocListItem = vocabularyList.get(groupPosition);
+                                                childListUnderVocItem.put(vocListItem, childValueList);
+                                                adapter.update(childListUnderVocItem);
                                                 adapter.notifyDataSetChanged();
                                                 exp_listview.expandGroup(groupPosition);
-                                                provideParams(parentEndPoint, headings, childList, childSizeList);
-
-
+                                                provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, childSizeList);
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
-
                                         }
                                     },
-
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
@@ -204,7 +164,6 @@ public class VocabularyList extends AppCompatActivity
                                         }
                                     }
                             );
-
                             MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
                         }
                     }
@@ -213,86 +172,68 @@ public class VocabularyList extends AppCompatActivity
             }
         });
 
-
-        //This is Navigation portion
+        //Navigation portion starts here
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
     }
 
 
-    private void provideParams(final String parentEndPoint, final List<String> headings, final HashMap<String, List<String>> childList, final List<Integer> childSizeList) {
+    private void provideParamsAtChildClick(final String parentEndPoint, final List<String> vocabularyList, final HashMap<String, List<String>> childListUnderVocItem, final List<Integer> childSizeList) {
 
         exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                String childValue = childList.get(headings.get(groupPosition))
+                String childValue = childListUnderVocItem.get(vocabularyList.get(groupPosition))
                         .get(childPosition);
                 if (!parentEndPoint.equalsIgnoreCase("sc")) {
                     int childSize = childSizeList.get(childPosition);
-
-                    Intent intent = new Intent(getApplicationContext(),
-                            ViewPagerSlider.class);
+                    Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
                     intent.putExtra("parentEndPoint", parentEndPoint);
                     intent.putExtra("pageTitle", childValue);
                     intent.putExtra("contentSize", childSize);
-
                     startActivity(intent);
                 } else {
-
-                    if (childValue.equalsIgnoreCase("By Range")) {
-
-                        //Fetching size for Range star new Activity
+                    String slcItem = childValue;
+                    if (slcItem.equalsIgnoreCase("By Range")) {
+                        //Fetching size for Range And go to next activity
                         String url = AllConstans.SERVER_VOC_URL + "sc";
                         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
-
                                         try {
                                             int size = response.getInt("totalElements");
-
                                             Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
                                             intent.putExtra("parentEndPoint", parentEndPoint);
                                             intent.putExtra("pageTitle", "By Range");
                                             intent.putExtra("contentSize", size);
                                             startActivity(intent);
-
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-
                                     }
                                 },
-
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-
                                     }
                                 }
                         );
-
                         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
-
                     } else {
-
                         //change childvalue to childEndPoint
-                        childValue = slcItemToEndPoint.get(childValue);
+                        String childEndPoint = slcItemToChildEndPoint.get(slcItem);
                         Intent intent = new Intent(getApplicationContext(), Slc.class);
                         intent.putExtra("parentEndPoint", parentEndPoint);
-                        intent.putExtra("childEndPoint", childValue);
+                        intent.putExtra("childEndPoint", childEndPoint);
                         startActivity(intent);
                     }
                 }
-
                 return false;
             }
         });
@@ -311,19 +252,13 @@ public class VocabularyList extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.vocabulary_list, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -338,8 +273,7 @@ public class VocabularyList extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            startActivity(new Intent(this, NewActivity.class));
-            // Handle the camera action
+
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
