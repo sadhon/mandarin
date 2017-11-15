@@ -30,7 +30,7 @@ public class Topic3PageRecyclerViewAdapter extends RecyclerView.Adapter<Topic3Pa
     private ArrayList<PageContent> pageContents;
     private Context ctx;
     MediaPlayer mediaPlayer;
-    
+
     Topic3PageRecyclerViewAdapter(Context ctx, ArrayList<PageContent> pageContents) {
         this.pageContents = pageContents;
         this.ctx = ctx;
