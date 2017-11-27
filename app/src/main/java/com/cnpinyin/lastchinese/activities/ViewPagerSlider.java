@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
@@ -31,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,29 +90,37 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                     index = (min - 1) / 50;
                 }
                 final int currentPageIndex = index;
-                String cleanChildEndPoint = childEndPoint.replaceAll(" ", "%20");
+
+                String cleanChildEndPoint = null;
+                try {
+                    cleanChildEndPoint = URLEncoder.encode(childEndPoint, "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+
                 //When item number of page is 20
-                String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "/" + cleanChildEndPoint + "?page=" + index;
+                String server_url = AllConstans.SERVER_BASE_URL + "size=20&by="+ parentEndPoint + "&filter=" + cleanChildEndPoint+"&paze=" + index;
+
                 //When item number of page is 20
                 if (parentEndPoint.equalsIgnoreCase("hsk")) {
                     server_url += "&size=50";
                 } else if (parentEndPoint.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("sc")) {
-                    server_url = AllConstans.SERVER_VOC_URL + parentEndPoint + "?page=" + index + "&size=50";
+                    server_url = AllConstans.SERVER_BASE_URL+"size=50&by="+parentEndPoint+"&filter=id&paze=" + index;
                 }
 
                 //Server data request
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, server_url, (String) null,
-                        new Response.Listener<JSONObject>() {
+                JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                        new Response.Listener<JSONArray>() {
                             ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
                             @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONArray jsonArray = response.getJSONArray("content");
-                                    String cnchar, pinyin, engword, sound;
-                                    for (int i = 0; i < jsonArray.length(); i++) {
-                                        JSONObject singleContentObj = jsonArray.getJSONObject(i);
+                            public void onResponse(JSONArray response) {
 
-                                        //checking objects belong to which parent
+                                try {
+                                    String cnchar, pinyin, engword, sound;
+                                    for(int i = 0 ; i< response.length(); i++){
+                                        JSONObject singleContentObj = response.getJSONObject(i);
+
                                         if (parentEndPoint.equals("topic3")) {
                                             cnchar = singleContentObj.getString("md_cnchar");
                                             pinyin = singleContentObj.getString("md_pinyin");
@@ -147,9 +157,11 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                             engword = singleContentObj.getString("engword");
                                             sound = singleContentObj.getString("wp_sound");
                                         }
+
                                         PageContent singlePageContent = new PageContent(pinyin, engword, cnchar, sound);
                                         pageContents.add(singlePageContent);
                                     }
+
                                     customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, ranges.size(), pageContents, parentEndPoint);
                                     mViewPager.setAdapter(customSwipeAdapter);
                                     //set Current page

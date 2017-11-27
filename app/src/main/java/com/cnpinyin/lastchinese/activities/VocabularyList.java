@@ -8,6 +8,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -91,12 +94,42 @@ public class VocabularyList extends AppCompatActivity
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
                 final String parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
+
+                String server_url = AllConstans.SERVER_BASE_URL +  "by=" + parentEndPoint;
+
                 if (parentEndPoint.equals("bct")) {
-                    Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
-                    intent.putExtra("parentEndPoint", parentEndPoint);
-                    intent.putExtra("pageTitle", "BCT");
-                    intent.putExtra("contentSize", 1035);
-                    startActivity(intent);
+
+                    //get size from size request and start new activity
+                    JsonArrayRequest sizeReq = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                            new Response.Listener<JSONArray>() {
+                                @Override
+                                public void onResponse(JSONArray response) {
+                                    try {
+                                        JSONObject sizeContainingObj = response.getJSONObject(0);
+                                        String stringSize = sizeContainingObj.getString("size");
+                                        int intSize = Integer.parseInt(stringSize);
+
+                                        Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
+                                        intent.putExtra("parentEndPoint", parentEndPoint);
+                                        intent.putExtra("pageTitle", "BCT");
+                                        intent.putExtra("contentSize", intSize);
+                                        startActivity(intent);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            },
+
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    error.printStackTrace();
+                                    Toast.makeText(VocabularyList.this, "" +error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    MySingleton.getInstance(getApplicationContext()).addToRequestQueue(sizeReq);
+
                 } else {
 
                     if (parent.isGroupExpanded(groupPosition)) {
@@ -106,11 +139,12 @@ public class VocabularyList extends AppCompatActivity
                         if (parentEndPoint.equals("sc") && childItemsNumber > 0) {
                             provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
                         } else {
-                            String server_url = AllConstans.SERVER_VOC_URL + parentEndPoint;
+
                             JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                                     new Response.Listener<JSONArray>() {
                                         @Override
                                         public void onResponse(JSONArray response) {
+
                                             List<String> childValueList = new ArrayList<String>();
                                             final List<Integer> childSizeList = new ArrayList<>();
                                             List<String> keysList = new ArrayList<String>();

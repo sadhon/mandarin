@@ -2,19 +2,14 @@ package com.cnpinyin.lastchinese.adapters;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.extras.PageContent;
-
 import java.util.ArrayList;
 
 /**
@@ -23,20 +18,20 @@ import java.util.ArrayList;
 
 public class CustomSwipeAdapter extends PagerAdapter {
     private Context ctx;
-    private int size ;
+    private int numberOfPage ;
     private ArrayList<PageContent> contents;
     private String parentEndPoint;
 
-    public CustomSwipeAdapter(Context ctx, int size, ArrayList<PageContent> contents, String parentEndPoint) {
+    public CustomSwipeAdapter(Context ctx, int numberOfPage, ArrayList<PageContent> contents, String parentEndPoint) {
         this.ctx = ctx;
-        this.size = size;
+        this.numberOfPage = numberOfPage;
         this.contents = contents;
         this.parentEndPoint = parentEndPoint;
     }
 
     @Override
     public int getCount() {
-        return size;
+        return numberOfPage;
     }
 
     @Override
