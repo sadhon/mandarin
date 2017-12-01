@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -175,7 +176,8 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(ViewPagerSlider.this, error + "", Toast.LENGTH_SHORT).show();
+                                if (error instanceof NoConnectionError)
+                                    Toast.makeText(ViewPagerSlider.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                             }
                         }
                 );

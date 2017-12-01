@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -183,6 +184,8 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            if (error instanceof NoConnectionError)
+                                Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
@@ -227,16 +230,17 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 },
                 new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {}
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof NoConnectionError)
+                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                    }
                 }
         );
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrayRequest);
-
     }
 
 
     private void setPinyinPageItems(String urlForPageItems) {
-
         JsonObjectRequest jObjReq = new JsonObjectRequest(Request.Method.GET, urlForPageItems, (String) null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -261,13 +265,13 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        if (error instanceof NoConnectionError)
+                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                     }
                 });
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jObjReq);
@@ -303,8 +307,8 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Toast.makeText(Slc.this, "" + error, Toast.LENGTH_SHORT).show();
+                        if (error instanceof NoConnectionError)
+                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                     }
                 }
         );

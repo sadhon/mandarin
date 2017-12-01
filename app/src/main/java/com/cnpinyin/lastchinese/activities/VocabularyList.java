@@ -1,6 +1,7 @@
 package com.cnpinyin.lastchinese.activities;
 
 import android.support.design.widget.NavigationView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -44,6 +46,12 @@ public class VocabularyList extends AppCompatActivity
     private HashMap<String, String> parentItemToParentEndPoint = new HashMap<>();
     private HashMap<String, String> slcItemToChildEndPoint = new HashMap<>();
     private int lastExpandedPosition = -1;
+
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return super.onRetainCustomNonConfigurationInstance();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,8 +132,8 @@ public class VocabularyList extends AppCompatActivity
                             new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    error.printStackTrace();
-                                    Toast.makeText(VocabularyList.this, "" +error, Toast.LENGTH_SHORT).show();
+                                    if (error instanceof NoConnectionError)
+                                    Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                                 }
                             });
                     MySingleton.getInstance(getApplicationContext()).addToRequestQueue(sizeReq);
@@ -144,7 +152,6 @@ public class VocabularyList extends AppCompatActivity
                                     new Response.Listener<JSONArray>() {
                                         @Override
                                         public void onResponse(JSONArray response) {
-
                                             List<String> childValueList = new ArrayList<String>();
                                             final List<Integer> childSizeList = new ArrayList<>();
                                             List<String> keysList = new ArrayList<String>();
@@ -180,13 +187,15 @@ public class VocabularyList extends AppCompatActivity
                                                 provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, childSizeList);
                                             } catch (Exception e) {
                                                 e.printStackTrace();
+                                                Toast.makeText(VocabularyList.this, "" + e, Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     },
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Toast.makeText(VocabularyList.this, error + "", Toast.LENGTH_SHORT).show();
+                                            if (error instanceof NoConnectionError)
+                                                Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                             );
@@ -207,7 +216,6 @@ public class VocabularyList extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-
 
     private void provideParamsAtChildClick(final String parentEndPoint, final List<String> vocabularyList, final HashMap<String, List<String>> childListUnderVocItem, final List<Integer> childSizeList) {
 
@@ -247,6 +255,8 @@ public class VocabularyList extends AppCompatActivity
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
+                                        if (error instanceof NoConnectionError)
+                                            Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                         );
@@ -264,7 +274,6 @@ public class VocabularyList extends AppCompatActivity
             }
         });
     }
-
 
     @Override
     public void onBackPressed() {

@@ -10,13 +10,6 @@
     tools:context="com.cnpinyin.lastchinese.activities.VocabularyList"
     tools:showIn="@layout/app_bar_vocabulary_list">
 
-    <android.support.v7.widget.SearchView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:background="#e2e0e2"
-        android:queryHint="Search Here">
-    </android.support.v7.widget.SearchView>
 
     <ExpandableListView
         android:id="@+id/expnadable_listview"

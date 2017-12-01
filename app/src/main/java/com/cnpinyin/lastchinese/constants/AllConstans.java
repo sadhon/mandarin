@@ -15,5 +15,4 @@ public class AllConstans {
     public static final String SERVER_BASE_SOUND_URL = "http://cnpinyin.com/pinyin/PYT/sound/md_wpsound/";
 
 
-
 }

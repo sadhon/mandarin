@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
             @Override
             public void onClick(View v) {
+
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
@@ -70,6 +72,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
                     mediaPlayer.setDataSource(url);
                     mediaPlayer.prepareAsync();
                     holder.sound_icon.setEnabled(false);
+                    Log.e("sound", url);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(ctx, "" + e, Toast.LENGTH_SHORT).show();

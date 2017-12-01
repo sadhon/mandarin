@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:textSize="16sp"
     android:text="Hello"
-    android:background="@drawable/dottet"
     android:textColor="#fff">
 
 </TextView>
