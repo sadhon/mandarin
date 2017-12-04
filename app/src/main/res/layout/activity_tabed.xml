@@ -49,12 +49,14 @@
     </android.support.design.widget.AppBarLayout>
 
     <com.cnpinyin.lastchinese.extras.CustomViewPager
+
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#eeeeee"
+        android:layout_height="fill_parent"
+        android:background="#EEEEEE"
         android:padding="10dp"
         android:layout_below="@id/appbar"
+        android:layout_marginBottom="40dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <Button
