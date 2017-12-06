@@ -60,6 +60,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         mViewPager = (android.support.v4.view.ViewPager) findViewById(R.id.container);
         prev = (Button) findViewById(R.id.btn_next);
         next = (Button) findViewById(R.id.btn_prev);
+
         //adding a new fornt
         toolBarTitle.setTypeface(TypeFaceProvider.getTypeFace(ViewPagerSlider.this, "orangejuice"));
         setSupportActionBar(toolbar);
@@ -106,8 +107,11 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 //When item number of page is 20
                 if (parentEndPoint.equalsIgnoreCase("hsk")) {
                     server_url += "&size=50";
-                } else if (parentEndPoint.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("sc")) {
+                } else if (parentEndPoint.equalsIgnoreCase("bct") ) {
                     server_url = AllConstans.SERVER_BASE_URL+"size=50&by="+parentEndPoint+"&filter=id&paze=" + index;
+                }else if( parentEndPoint.equalsIgnoreCase("sc"))
+                {
+                    server_url = AllConstans.SERVER_BASE_URL+"size=50&by=sc-range&filter=id&paze=" + index;
                 }
 
                 //Server data request
@@ -147,10 +151,10 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                                             sound = singleContentObj.getString("wp2_sound");
 
                                         } else if (parentEndPoint.equalsIgnoreCase("sc")) {
-                                            cnchar = singleContentObj.getString("sc_char");
-                                            pinyin = singleContentObj.getString("sc_pinyin");
-                                            engword = singleContentObj.getString("sc_eng");
-                                            sound = singleContentObj.getString("sc_sound");
+                                            cnchar = singleContentObj.getString("SC_char");
+                                            pinyin = singleContentObj.getString("SC_pinyin");
+                                            engword = singleContentObj.getString("SC_eng");
+                                            sound = singleContentObj.getString("SC_sound");
 
                                         } else {
                                             cnchar = singleContentObj.getString("cnchar");

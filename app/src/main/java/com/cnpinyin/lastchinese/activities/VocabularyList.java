@@ -1,7 +1,6 @@
 package com.cnpinyin.lastchinese.activities;
 
 import android.support.design.widget.NavigationView;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.ExpandableListAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
@@ -30,9 +27,6 @@ import com.cnpinyin.lastchinese.singleton.MySingleton;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,10 +63,10 @@ public class VocabularyList extends AppCompatActivity
         parentItemToParentEndPoint.put("By BCT", "bct");
         parentItemToParentEndPoint.put("Single Character List", "sc");
 
-        slcItemToChildEndPoint.put("By Range", "range");
-        slcItemToChildEndPoint.put("By Stroke No", "stroke");
-        slcItemToChildEndPoint.put("By Radical", "radical");
-        slcItemToChildEndPoint.put("By Pinyin", "pinyin");
+        slcItemToChildEndPoint.put("By Range", "sc-range");
+        slcItemToChildEndPoint.put("By Stroke No", "sc-stroke");
+        slcItemToChildEndPoint.put("By Radical", "sc-radical");
+        slcItemToChildEndPoint.put("By Pinyin", "sc-pinyin");
 
         final String[] sclChildItems = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
         String[] vocabularyItems = getResources().getStringArray(R.array.heading_items);
@@ -235,18 +229,25 @@ public class VocabularyList extends AppCompatActivity
                     String slcItem = childValue;
                     if (slcItem.equalsIgnoreCase("By Range")) {
                         //Fetching size for Range And go to next activity
-                        String url = AllConstans.SERVER_VOC_URL + "sc";
-                        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
-                                new Response.Listener<JSONObject>() {
+                        //String url = AllConstans.SERVER_VOC_URL + "sc";
+                        String url = AllConstans.SERVER_BASE_URL + "by=sc-range";
+                        JsonArrayRequest objectRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
+                                new Response.Listener<JSONArray>() {
                                     @Override
-                                    public void onResponse(JSONObject response) {
+                                    public void onResponse(JSONArray response) {
+
                                         try {
-                                            int size = response.getInt("totalElements");
+
+                                            JSONObject rangeContainingObj =  response.getJSONObject(0);
+
+                                            int size = rangeContainingObj.getInt("size");
                                             Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
                                             intent.putExtra("parentEndPoint", parentEndPoint);
                                             intent.putExtra("pageTitle", "By Range");
                                             intent.putExtra("contentSize", size);
+
                                             startActivity(intent);
+
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -264,6 +265,7 @@ public class VocabularyList extends AppCompatActivity
                     } else {
                         //change childvalue to childEndPoint
                         String childEndPoint = slcItemToChildEndPoint.get(slcItem);
+
                         Intent intent = new Intent(getApplicationContext(), Slc.class);
                         intent.putExtra("parentEndPoint", parentEndPoint);
                         intent.putExtra("childEndPoint", childEndPoint);

@@ -135,10 +135,6 @@ public class PopupForImage extends AppCompatActivity {
         Glide.with(PopupForImage.this)
                 .asGif()
                 .load(genUrl)
-                .apply(new RequestOptions()
-                        .placeholder(R.raw.image_loading)
-                        .error(R.drawable.ic_menu_camera))
-
                 .thumbnail(Glide.with(PopupForImage.this).asGif().load(R.raw.image_loading))
                 .into(imageView);
     }

@@ -19,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
@@ -74,9 +73,10 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
         btnNext.setOnClickListener(this);
         setSupportActionBar(toolbar);
         mainSpinnerTitle.setText(childEndPoint.toUpperCase());
-        urlForMainSpinnerItems = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint;
+       // urlForMainSpinnerItems = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint;
+        urlForMainSpinnerItems = AllConstans.SERVER_BASE_URL + "by=" + childEndPoint;
 
-        if (childEndPoint.equalsIgnoreCase("pinyin")) {
+        if (childEndPoint.equalsIgnoreCase("sc-pinyin")) {
             setMainSpinnerAdapterAndClickListern("", parentEndpoint, childEndPoint);
         } else {
             setMainSpinnerAdapterAndClickListern(urlForMainSpinnerItems, parentEndpoint, childEndPoint);
@@ -98,7 +98,10 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
             mainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    String urlForSupSpinnerItems = urlForMainSpinnerItems + "/" + listOfMainSpinnerItems.get(position);
+                    //String urlForSupSpinnerItems = urlForMainSpinnerItems + "/" + listOfMainSpinnerItems.get(position);
+                    String urlForSupSpinnerItems = AllConstans.SERVER_BASE_URL+"by=sc-pinyin&char=" + listOfMainSpinnerItems.get(position);
+                    Log.e("pin", urlForSupSpinnerItems);
+
                     setSubSpinnerItems(urlForSupSpinnerItems);
                 }
 
@@ -111,6 +114,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     new Response.Listener<JSONArray>() {
                         @Override
                         public void onResponse(JSONArray response) {
+
                             final ArrayList<String> mainSpinnerValues = new ArrayList<>();
                             final HashMap<String, Integer> mainToSubSize = new HashMap<>(); //Size against radical or stroke
                             String main = "";
@@ -118,11 +122,11 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                             try {
                                 for (int i = 0; i < response.length(); i++) {
                                     JSONObject jObj = response.getJSONObject(i);
-                                    if (childEndPoint.equalsIgnoreCase("stroke")) {
-                                        main = jObj.getString("numberOfStroke");
+                                    if (childEndPoint.equalsIgnoreCase("sc-stroke")) {
+                                        main = jObj.getString("SC_stroke_no");
                                         size = jObj.getInt("size");
-                                    } else if (childEndPoint.equalsIgnoreCase("radical")) {
-                                        main = jObj.getString("radical");
+                                    } else if (childEndPoint.equalsIgnoreCase("sc-radical")) {
+                                        main = jObj.getString("SC_radical");
                                         size = jObj.getInt("size");
                                     }
                                     mainSpinnerValues.add(main);
@@ -159,7 +163,16 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                                                 } catch (UnsupportedEncodingException e) {
                                                     e.printStackTrace();
                                                 }
-                                                String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint + "/" + numOrCharEncoded + "?page=" + spinnerItemIndex + "&size=50";
+                                                //String url = AllConstans.SERVER_VOC_URL + parentEndpoint + "/" + childEndPoint + "/" + numOrCharEncoded + "?page=" + spinnerItemIndex + "&size=50";
+
+                                                String url = "";
+                                                if(childEndPoint.equalsIgnoreCase("sc-radical") )
+                                                {
+                                                    url = AllConstans.SERVER_BASE_URL + "by=sc-radical&size=50&filter=" + numOrCharEncoded+"&paze="+currentPageIndex;
+                                                }else {
+                                                   // url = AllConstans.SERVER_BASE_URL + "by=sc-stroke&filter=" + numOrCharEncoded;
+                                                    url = AllConstans.SERVER_BASE_URL + "by=sc-stroke&filter=" + numOrCharEncoded + "&size=50&paze=" + currentPageIndex;
+                                                }
 
                                                 //Take data from server and set the required params for CustomSwipeAdapter
                                                 setCustomSwipeAdapter(url, parentEndpoint, currentPageIndex);
@@ -204,7 +217,8 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
 
                         try {
                             for (int i = 0; i < response.length(); i++) {
-                                singleItemForSubSpinner = response.getString(i);
+                                JSONObject singlObj  = response.getJSONObject(i);
+                                singleItemForSubSpinner = singlObj.getString("SC_pinyin_wd");
                                 listForSubSpinnerItems.add(singleItemForSubSpinner);
                             }
 
@@ -215,7 +229,8 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                             subSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    String urlForPageItems = urlForMainSpinnerItems + "/" +"word/" + listForSubSpinnerItems.get(position) ;
+                                    //String urlForPageItems = urlForMainSpinnerItems + "/" +"word/" + listForSubSpinnerItems.get(position) ;
+                                    String urlForPageItems = AllConstans.SERVER_BASE_URL+"by=sc-pinyin&filter=" + listForSubSpinnerItems.get(position) ;
 
                                     setPinyinPageItems(urlForPageItems);
                                 }
@@ -241,20 +256,21 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
 
 
     private void setPinyinPageItems(String urlForPageItems) {
-        JsonObjectRequest jObjReq = new JsonObjectRequest(Request.Method.GET, urlForPageItems, (String) null,
-                new Response.Listener<JSONObject>() {
+        JsonArrayRequest jObjReq = new JsonArrayRequest(Request.Method.GET, urlForPageItems, (String) null,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
+
                         try {
-                            JSONArray jsonArray = response.getJSONArray("content");
+                            //JSONArray jsonArray = response.getJSONArray("content");
                             String cnchar, pinyin, engword, sound;
-                            ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject contentObj = jsonArray.getJSONObject(i);
-                                cnchar = contentObj.getString("sc_char");
-                                pinyin = contentObj.getString("pinyin");
-                                engword = contentObj.getString("sc_eng");
-                                sound = contentObj.getString("sc_sound");
+                            ArrayList<PageContent> pageContents = new ArrayList<>();
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject contentObj = response.getJSONObject(i);
+                                cnchar = contentObj.getString("SC_char");
+                                pinyin = contentObj.getString("SC_pinyin");
+                                engword = contentObj.getString("SC_eng");
+                                sound = contentObj.getString("SC_sound");
                                 PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
                                 pageContents.add(pageContent);
                             }
@@ -279,20 +295,21 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
 
 
     private void setCustomSwipeAdapter(String url, final String parentEndpoint, final int currentPageIndex) {
-        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null,
-                new Response.Listener<JSONObject>() {
+        JsonArrayRequest objectRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
+
                         try {
-                            JSONArray jsonArray = response.getJSONArray("content");
+                           // JSONArray jsonArray = response.getJSONArray("content");
                             String cnchar, pinyin, engword, sound;
                             ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject contentObj = jsonArray.getJSONObject(i);
-                                cnchar = contentObj.getString("sc_char");
-                                pinyin = contentObj.getString("sc_pinyin");
-                                engword = contentObj.getString("sc_eng");
-                                sound = contentObj.getString("sc_sound");
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject contentObj = response.getJSONObject(i);
+                                cnchar = contentObj.getString("SC_char");
+                                pinyin = contentObj.getString("SC_pinyin");
+                                engword = contentObj.getString("SC_eng");
+                                sound = contentObj.getString("SC_sound");
                                 PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
                                 pageContents.add(pageContent);
                             }
