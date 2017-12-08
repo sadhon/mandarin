@@ -8,14 +8,15 @@
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
+        <activity
+            android:name=".activities.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,15 +36,18 @@
             android:name=".activities.PopupForImage"
             android:label="cnpinyin.com"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
-
         <activity
             android:name=".activities.Slc"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.ProductLIst" />
         <activity
             android:name=".activities.SentencesAndDialogue"
             android:label="Sentences And Dialogues" />
-        <activity android:name=".activities.SentencePageSlider"/>
+        <activity android:name=".activities.SentencePageSlider" />
+        <activity android:name=".activities.DbTest"></activity>
     </application>
 
 </manifest>

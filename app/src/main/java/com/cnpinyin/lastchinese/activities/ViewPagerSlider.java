@@ -24,6 +24,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.CustomSwipeAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
+import com.cnpinyin.lastchinese.database.VocDatabaseAdapter;
 import com.cnpinyin.lastchinese.extras.PageContent;
 import com.cnpinyin.lastchinese.extras.TypeFaceProvider;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
@@ -48,6 +49,9 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
     private Button prev, next;
     private int size;
     private ArrayList<String> ranges = new ArrayList<>();
+    private VocDatabaseAdapter voDbHelper = null;
+    String parentEndPoint;
+    String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +65,14 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         prev = (Button) findViewById(R.id.btn_next);
         next = (Button) findViewById(R.id.btn_prev);
 
+        voDbHelper = new VocDatabaseAdapter(this);
+
         //adding a new fornt
         toolBarTitle.setTypeface(TypeFaceProvider.getTypeFace(ViewPagerSlider.this, "orangejuice"));
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
         final String childEndPoint = intent.getStringExtra("pageTitle");
-        final String parentEndPoint = intent.getStringExtra("parentEndPoint");
+        parentEndPoint = intent.getStringExtra("parentEndPoint");
         size = intent.getIntExtra("contentSize", 0);
         toolBarTitle.setText(childEndPoint.toUpperCase());
         next.setOnClickListener(this);
@@ -100,7 +106,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                     e.printStackTrace();
                 }
 
-
                 //When item number of page is 20
                 String server_url = AllConstans.SERVER_BASE_URL + "size=20&by="+ parentEndPoint + "&filter=" + cleanChildEndPoint+"&paze=" + index;
 
@@ -114,82 +119,112 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                     server_url = AllConstans.SERVER_BASE_URL+"size=50&by=sc-range&filter=id&paze=" + index;
                 }
 
-                //Server data request
-                JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
-                        new Response.Listener<JSONArray>() {
-                            ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
-                            @Override
-                            public void onResponse(JSONArray response) {
+                url = server_url;
 
-                                try {
-                                    String cnchar, pinyin, engword, sound;
-                                    for(int i = 0 ; i< response.length(); i++){
-                                        JSONObject singleContentObj = response.getJSONObject(i);
-
-                                        if (parentEndPoint.equals("topic3")) {
-                                            cnchar = singleContentObj.getString("md_cnchar");
-                                            pinyin = singleContentObj.getString("md_pinyin");
-                                            engword = singleContentObj.getString("md_engword");
-                                            sound = singleContentObj.getString("md_sound");
-
-                                        } else if (parentEndPoint.equalsIgnoreCase("hsk")) {
-                                            cnchar = singleContentObj.getString("hskw_char");
-                                            pinyin = singleContentObj.getString("hskw_pinyin");
-                                            engword = singleContentObj.getString("hskw_eng");
-                                            sound = singleContentObj.getString("hsk_sound");
-
-                                        } else if (parentEndPoint.equalsIgnoreCase("bct")) {
-                                            cnchar = singleContentObj.getString("bct_char");
-                                            pinyin = singleContentObj.getString("bct_pinyin");
-                                            engword = singleContentObj.getString("bct_eng");
-                                            sound = singleContentObj.getString("bct_sound");
-
-                                        } else if (parentEndPoint.equalsIgnoreCase("topic2")) {
-                                            cnchar = singleContentObj.getString("wp2_char");
-                                            pinyin = singleContentObj.getString("wp2_pinyin");
-                                            engword = singleContentObj.getString("wp2_eng");
-                                            sound = singleContentObj.getString("wp2_sound");
-
-                                        } else if (parentEndPoint.equalsIgnoreCase("sc")) {
-                                            cnchar = singleContentObj.getString("SC_char");
-                                            pinyin = singleContentObj.getString("SC_pinyin");
-                                            engword = singleContentObj.getString("SC_eng");
-                                            sound = singleContentObj.getString("SC_sound");
-
-                                        } else {
-                                            cnchar = singleContentObj.getString("cnchar");
-                                            pinyin = singleContentObj.getString("pinyin");
-                                            engword = singleContentObj.getString("engword");
-                                            sound = singleContentObj.getString("wp_sound");
-                                        }
-
-                                        PageContent singlePageContent = new PageContent(pinyin, engword, cnchar, sound);
-                                        pageContents.add(singlePageContent);
-                                    }
-
-                                    customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, ranges.size(), pageContents, parentEndPoint);
-                                    mViewPager.setAdapter(customSwipeAdapter);
-                                    //set Current page
-                                    mViewPager.setCurrentItem(currentPageIndex, true);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    Toast.makeText(ViewPagerSlider.this, "" + e, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                if (error instanceof NoConnectionError)
-                                    Toast.makeText(ViewPagerSlider.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                );
-                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+                if(voDbHelper.hasRow(url))
+                {
+                    String pageData = voDbHelper.getData(url);
+                    try {
+                        JSONArray response = new JSONArray(pageData);
+                        showPageData(response, parentEndPoint, currentPageIndex);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    fetchDataFromServer(url, parentEndPoint, currentPageIndex);
+                }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
+
+    private void fetchDataFromServer(final String url, final String parentEndPoint, final int currentPageIndex) {
+        //Server data request
+        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
+                new Response.Listener<JSONArray>() {
+                    ArrayList<PageContent> pageContents = new ArrayList<PageContent>();
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        //showing page data from here...
+                        showPageData(response, parentEndPoint, currentPageIndex);
+
+                        //save page data to sqlite database
+                        voDbHelper.insertData(url, response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof NoConnectionError)
+                            Toast.makeText(ViewPagerSlider.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+
+    }
+
+
+    private void showPageData(JSONArray response, String parentEndPoint,  int currentPageIndex) {
+
+        ArrayList<PageContent> pageContents = new ArrayList<>();
+        try {
+            String cnchar, pinyin, engword, sound;
+            for(int i = 0 ; i< response.length(); i++){
+                JSONObject singleContentObj = response.getJSONObject(i);
+
+                if (parentEndPoint.equals("topic3")) {
+                    cnchar = singleContentObj.getString("md_cnchar");
+                    pinyin = singleContentObj.getString("md_pinyin");
+                    engword = singleContentObj.getString("md_engword");
+                    sound = singleContentObj.getString("md_sound");
+
+                } else if (parentEndPoint.equalsIgnoreCase("hsk")) {
+                    cnchar = singleContentObj.getString("hskw_char");
+                    pinyin = singleContentObj.getString("hskw_pinyin");
+                    engword = singleContentObj.getString("hskw_eng");
+                    sound = singleContentObj.getString("hsk_sound");
+
+                } else if (parentEndPoint.equalsIgnoreCase("bct")) {
+                    cnchar = singleContentObj.getString("bct_char");
+                    pinyin = singleContentObj.getString("bct_pinyin");
+                    engword = singleContentObj.getString("bct_eng");
+                    sound = singleContentObj.getString("bct_sound");
+
+                } else if (parentEndPoint.equalsIgnoreCase("topic2")) {
+                    cnchar = singleContentObj.getString("wp2_char");
+                    pinyin = singleContentObj.getString("wp2_pinyin");
+                    engword = singleContentObj.getString("wp2_eng");
+                    sound = singleContentObj.getString("wp2_sound");
+
+                } else if (parentEndPoint.equalsIgnoreCase("sc")) {
+                    cnchar = singleContentObj.getString("SC_char");
+                    pinyin = singleContentObj.getString("SC_pinyin");
+                    engword = singleContentObj.getString("SC_eng");
+                    sound = singleContentObj.getString("SC_sound");
+
+                } else {
+                    cnchar = singleContentObj.getString("cnchar");
+                    pinyin = singleContentObj.getString("pinyin");
+                    engword = singleContentObj.getString("engword");
+                    sound = singleContentObj.getString("wp_sound");
+                }
+
+                PageContent singlePageContent = new PageContent(pinyin, engword, cnchar, sound);
+                pageContents.add(singlePageContent);
+            }
+
+            customSwipeAdapter = new CustomSwipeAdapter(ViewPagerSlider.this, ranges.size(), pageContents, parentEndPoint);
+            mViewPager.setAdapter(customSwipeAdapter);
+            //set Current page
+            mViewPager.setCurrentItem(currentPageIndex, true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(ViewPagerSlider.this, "" + e, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private ArrayList<String> getSpinnerRanges(int size, int numberOfRangeItems) {

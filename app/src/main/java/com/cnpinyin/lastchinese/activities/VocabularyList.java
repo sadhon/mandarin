@@ -22,6 +22,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.cnpinyin.lastchinese.R;
 import com.cnpinyin.lastchinese.adapters.ExpandableListAdapter;
 import com.cnpinyin.lastchinese.constants.AllConstans;
+import com.cnpinyin.lastchinese.database.VocDatabaseAdapter;
 import com.cnpinyin.lastchinese.singleton.MySingleton;
 
 import org.json.JSONArray;
@@ -40,7 +41,9 @@ public class VocabularyList extends AppCompatActivity
     private HashMap<String, String> parentItemToParentEndPoint = new HashMap<>();
     private HashMap<String, String> slcItemToChildEndPoint = new HashMap<>();
     private int lastExpandedPosition = -1;
-
+    VocDatabaseAdapter vocDbAdapter= null;
+    HashMap<String, List<String>> childListUnderVocItem;
+    List<String> vocabularyList;
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -51,6 +54,8 @@ public class VocabularyList extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vocabulary_list);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         exp_listview = (ExpandableListView) findViewById(R.id.expnadable_listview);
         setSupportActionBar(toolbar);
@@ -68,11 +73,14 @@ public class VocabularyList extends AppCompatActivity
         slcItemToChildEndPoint.put("By Radical", "sc-radical");
         slcItemToChildEndPoint.put("By Pinyin", "sc-pinyin");
 
+        //for working with sqlite
+        vocDbAdapter = new VocDatabaseAdapter(VocabularyList.this);
         final String[] sclChildItems = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
         String[] vocabularyItems = getResources().getStringArray(R.array.heading_items);
         ArrayList<String> sclChildItemList = new ArrayList<>(Arrays.asList(sclChildItems));
-        final List<String> vocabularyList = new ArrayList<String>(Arrays.asList(vocabularyItems));
-        final HashMap<String, List<String>> childListUnderVocItem = new HashMap<>();
+        vocabularyList = new ArrayList<String>(Arrays.asList(vocabularyItems));
+        childListUnderVocItem = new HashMap<>();
+
         //FirstLy set all childList empty except the Last
         for (int i = 0; i < vocabularyList.size() - 1; i++) {
             childListUnderVocItem.put(vocabularyList.get(i), new ArrayList<String>());
@@ -97,7 +105,7 @@ public class VocabularyList extends AppCompatActivity
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
                 final String parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
 
-                String server_url = AllConstans.SERVER_BASE_URL +  "by=" + parentEndPoint;
+                final String server_url = AllConstans.SERVER_BASE_URL +  "by=" + parentEndPoint;
 
                 if (parentEndPoint.equals("bct")) {
 
@@ -142,47 +150,15 @@ public class VocabularyList extends AppCompatActivity
                             provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
                         } else {
 
+                            //fetch json data for the firs time...
                             JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                                     new Response.Listener<JSONArray>() {
                                         @Override
                                         public void onResponse(JSONArray response) {
-                                            List<String> childValueList = new ArrayList<String>();
-                                            final List<Integer> childSizeList = new ArrayList<>();
-                                            List<String> keysList = new ArrayList<String>();
-                                            try {
-                                                JSONObject firstJSONObject = response.getJSONObject(0);
-                                                Iterator keysIterator = firstJSONObject.keys();
-                                                while (keysIterator.hasNext()) {
-                                                    String key = (String) keysIterator.next();
-                                                    keysList.add(key);
-                                                }
-                                                String childValue;
-                                                int childSizeValue;
-                                                for (int i = 0; i < response.length(); i++) {
-                                                    JSONObject singleObj = response.getJSONObject(i);
-                                                    /* Determining  single childEndPoint value and size
-                                                    as Sometime it doesn't get keys serially so this solution
-                                                    obviously only two keys are there.. and one is size*/
-                                                    if (keysList.get(0).equalsIgnoreCase("size")) {
-                                                        childValue = singleObj.getString(keysList.get(1));
-                                                        childSizeValue = singleObj.getInt(keysList.get(0));
-                                                    } else {
-                                                        childValue = singleObj.getString(keysList.get(0));
-                                                        childSizeValue = singleObj.getInt(keysList.get(1));
-                                                    }
-                                                    childValueList.add(childValue);
-                                                    childSizeList.add(childSizeValue);
-                                                }
-                                                String vocListItem = vocabularyList.get(groupPosition);
-                                                childListUnderVocItem.put(vocListItem, childValueList);
-                                                adapter.update(childListUnderVocItem);
-                                                adapter.notifyDataSetChanged();
-                                                exp_listview.expandGroup(groupPosition);
-                                                provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, childSizeList);
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                Toast.makeText(VocabularyList.this, "" + e, Toast.LENGTH_SHORT).show();
-                                            }
+                                            //shows the respective children against certain groupPosition
+                                            showChildValues(response,groupPosition, parentEndPoint);
+                                            //save json response as string against respective url
+                                            vocDbAdapter.insertData(server_url, response.toString());
                                         }
                                     },
                                     new Response.ErrorListener() {
@@ -194,6 +170,24 @@ public class VocabularyList extends AppCompatActivity
                                     }
                             );
                             MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
+
+
+/*                            if(vocDbAdapter.hasRow(server_url))
+                            {
+
+                                String server_data = vocDbAdapter.getData(server_url);
+                                JSONArray response= null;
+                                try {
+                                    response = new JSONArray(server_data);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                showChildValues(response, groupPosition, parentEndPoint);
+                            }
+                            else {
+
+                            }*/
                         }
                     }
                 }
@@ -211,11 +205,57 @@ public class VocabularyList extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void showChildValues(JSONArray response, int groupPosition, String parentEndPoint) {
+
+        List<String> childValueList = new ArrayList<String>();
+        final List<Integer> childSizeList = new ArrayList<>();
+        List<String> keysList = new ArrayList<String>();
+
+        try {
+            JSONObject firstJSONObject = response.getJSONObject(0);
+            Iterator keysIterator = firstJSONObject.keys();
+            while (keysIterator.hasNext()) {
+                String key = (String) keysIterator.next();
+                keysList.add(key);
+            }
+            String childValue;
+            int childSizeValue;
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject singleObj = response.getJSONObject(i);
+
+                /* Determining  single childEndPoint value and size
+                as Sometime it doesn't get keys serially so this solution
+                obviously only two keys are there.. and one is size*/
+
+                if (keysList.get(0).equalsIgnoreCase("size")) {
+                    childValue = singleObj.getString(keysList.get(1));
+                    childSizeValue = singleObj.getInt(keysList.get(0));
+                } else {
+                    childValue = singleObj.getString(keysList.get(0));
+                    childSizeValue = singleObj.getInt(keysList.get(1));
+                }
+                childValueList.add(childValue);
+                childSizeList.add(childSizeValue);
+            }
+
+            String vocListItem = vocabularyList.get(groupPosition);
+            childListUnderVocItem.put(vocListItem, childValueList);
+            adapter.update(childListUnderVocItem);
+            adapter.notifyDataSetChanged();
+            exp_listview.expandGroup(groupPosition);
+            provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, childSizeList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(VocabularyList.this, "" + e, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void provideParamsAtChildClick(final String parentEndPoint, final List<String> vocabularyList, final HashMap<String, List<String>> childListUnderVocItem, final List<Integer> childSizeList) {
 
         exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+            public boolean onChildClick(ExpandableListView parent, final View v, int groupPosition, int childPosition, long id) {
                 String childValue = childListUnderVocItem.get(vocabularyList.get(groupPosition))
                         .get(childPosition);
                 if (!parentEndPoint.equalsIgnoreCase("sc")) {
@@ -230,14 +270,14 @@ public class VocabularyList extends AppCompatActivity
                     if (slcItem.equalsIgnoreCase("By Range")) {
                         //Fetching size for Range And go to next activity
                         //String url = AllConstans.SERVER_VOC_URL + "sc";
-                        String url = AllConstans.SERVER_BASE_URL + "by=sc-range";
+                        final String url = AllConstans.SERVER_BASE_URL + "by=sc-range";
+
                         JsonArrayRequest objectRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
                                 new Response.Listener<JSONArray>() {
                                     @Override
                                     public void onResponse(JSONArray response) {
 
                                         try {
-
                                             JSONObject rangeContainingObj =  response.getJSONObject(0);
 
                                             int size = rangeContainingObj.getInt("size");
@@ -247,7 +287,6 @@ public class VocabularyList extends AppCompatActivity
                                             intent.putExtra("contentSize", size);
 
                                             startActivity(intent);
-
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
