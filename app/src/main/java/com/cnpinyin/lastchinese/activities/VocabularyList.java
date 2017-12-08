@@ -107,7 +107,7 @@ public class VocabularyList extends AppCompatActivity
 
                 final String server_url = AllConstans.SERVER_BASE_URL +  "by=" + parentEndPoint;
 
-                if (parentEndPoint.equals("bct")) {
+                if (parentEndPoint.equalsIgnoreCase("bct")) {
 
                     //get size from size request and start new activity
                     JsonArrayRequest sizeReq = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
@@ -265,6 +265,9 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("pageTitle", childValue);
                     intent.putExtra("contentSize", childSize);
                     startActivity(intent);
+
+
+
                 } else {
                     String slcItem = childValue;
                     if (slcItem.equalsIgnoreCase("By Range")) {

@@ -43,10 +43,7 @@ import java.util.regex.Pattern;
 public class ViewPagerSlider extends AppCompatActivity implements View.OnClickListener {
     private android.support.v4.view.ViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
-    private Toolbar toolbar;
-    private TextView toolBarTitle;
     private Spinner spinner;
-    private Button prev, next;
     private int size;
     private ArrayList<String> ranges = new ArrayList<>();
     private VocDatabaseAdapter voDbHelper = null;
@@ -58,12 +55,12 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabed);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolBarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        TextView toolBarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
         spinner = (Spinner) findViewById(R.id.spinner);
         mViewPager = (android.support.v4.view.ViewPager) findViewById(R.id.container);
-        prev = (Button) findViewById(R.id.btn_next);
-        next = (Button) findViewById(R.id.btn_prev);
+        Button prev = (Button) findViewById(R.id.btn_next);
+        Button next = (Button) findViewById(R.id.btn_prev);
 
         voDbHelper = new VocDatabaseAdapter(this);
 
@@ -92,13 +89,13 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int min = getRangeMinimumValue();
+
                 //determining page index
                 int index = (min - 1) / 20;
                 if (childEndPoint.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") || parentEndPoint.equalsIgnoreCase("sc")) {
                     index = (min - 1) / 50;
                 }
                 final int currentPageIndex = index;
-
                 String cleanChildEndPoint = null;
                 try {
                     cleanChildEndPoint = URLEncoder.encode(childEndPoint, "utf-8");
@@ -120,6 +117,12 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
                 }
 
                 url = server_url;
+
+                /*
+                **check first if the url corresponding response is available in db
+                **if not the fetch data from server for the first time
+                ** and save the server response in the sqlite database.
+                */
 
                 if(voDbHelper.hasRow(url))
                 {
