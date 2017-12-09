@@ -312,7 +312,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject contentObj = response.getJSONObject(i);
                                 cnchar = contentObj.getString("SC_char");
-                                pinyin = contentObj.getString("SC_pinyin");
+                                pinyin = contentObj.getString("SC_pytone");
                                 engword = contentObj.getString("SC_eng");
                                 sound = contentObj.getString("SC_sound");
                                 PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
@@ -390,7 +390,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject contentObj = response.getJSONObject(i);
                 cnchar = contentObj.getString("SC_char");
-                pinyin = contentObj.getString("SC_pinyin");
+                pinyin = contentObj.getString("SC_pytone");
                 engword = contentObj.getString("SC_eng");
                 sound = contentObj.getString("SC_sound");
                 PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);

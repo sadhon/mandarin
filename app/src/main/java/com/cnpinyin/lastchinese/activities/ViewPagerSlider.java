@@ -181,37 +181,37 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
                 if (parentEndPoint.equals("topic3")) {
                     cnchar = singleContentObj.getString("md_cnchar");
-                    pinyin = singleContentObj.getString("md_pinyin");
+                    pinyin = singleContentObj.getString("md_pytone");
                     engword = singleContentObj.getString("md_engword");
                     sound = singleContentObj.getString("md_sound");
 
                 } else if (parentEndPoint.equalsIgnoreCase("hsk")) {
                     cnchar = singleContentObj.getString("hskw_char");
-                    pinyin = singleContentObj.getString("hskw_pinyin");
+                    pinyin = singleContentObj.getString("hskw_pytone_m_ws");
                     engword = singleContentObj.getString("hskw_eng");
                     sound = singleContentObj.getString("hsk_sound");
 
                 } else if (parentEndPoint.equalsIgnoreCase("bct")) {
                     cnchar = singleContentObj.getString("bct_char");
-                    pinyin = singleContentObj.getString("bct_pinyin");
+                    pinyin = singleContentObj.getString("bct_pytone");
                     engword = singleContentObj.getString("bct_eng");
                     sound = singleContentObj.getString("bct_sound");
 
                 } else if (parentEndPoint.equalsIgnoreCase("topic2")) {
                     cnchar = singleContentObj.getString("wp2_char");
-                    pinyin = singleContentObj.getString("wp2_pinyin");
+                    pinyin = singleContentObj.getString("wp2_pytone");
                     engword = singleContentObj.getString("wp2_eng");
                     sound = singleContentObj.getString("wp2_sound");
 
                 } else if (parentEndPoint.equalsIgnoreCase("sc")) {
                     cnchar = singleContentObj.getString("SC_char");
-                    pinyin = singleContentObj.getString("SC_pinyin");
+                    pinyin = singleContentObj.getString("SC_pytone");
                     engword = singleContentObj.getString("SC_eng");
                     sound = singleContentObj.getString("SC_sound");
 
                 } else {
                     cnchar = singleContentObj.getString("cnchar");
-                    pinyin = singleContentObj.getString("pinyin");
+                    pinyin = singleContentObj.getString("pytone_ws");
                     engword = singleContentObj.getString("engword");
                     sound = singleContentObj.getString("wp_sound");
                 }

@@ -150,6 +150,10 @@ public class VocabularyList extends AppCompatActivity
                             provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
                         } else {
 
+
+                            Toast.makeText(VocabularyList.this, "" + vocDbAdapter.getData(server_url), Toast.LENGTH_SHORT).show();
+
+
                             //fetch json data for the firs time...
                             JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                                     new Response.Listener<JSONArray>() {
@@ -265,6 +269,7 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("pageTitle", childValue);
                     intent.putExtra("contentSize", childSize);
                     startActivity(intent);
+
 
 
 
