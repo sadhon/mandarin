@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Slc extends AppCompatActivity implements View.OnClickListener {
+public class SlcPinyin extends AppCompatActivity implements View.OnClickListener {
 
     private CustomViewPager mViewPager;
     private CustomSwipeAdapter customSwipeAdapter;
@@ -74,12 +74,8 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
         urlForMainSpinnerItems = AllConstans.SERVER_BASE_URL + "by=" + childEndPoint;
 
         if (childEndPoint.equalsIgnoreCase("sc-pinyin")) {
-
             //empty url because need not face data from url, its static
-            urlForMainSpinnerItems = "";
-            setMainSpinnerAdapterAndClickListern(urlForMainSpinnerItems, parentEndpoint, childEndPoint);
-        } else {
-            setMainSpinnerAdapterAndClickListern(urlForMainSpinnerItems, parentEndpoint, childEndPoint);
+            setMainSpinnerAdapterAndClickListern("", parentEndpoint, childEndPoint);
         }
     }
 
@@ -162,7 +158,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof NoConnectionError)
-                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SlcPinyin.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -244,7 +240,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(Slc.this, "" + e, Toast.LENGTH_SHORT).show();
+            Toast.makeText(SlcPinyin.this, "" + e, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -263,7 +259,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof NoConnectionError)
-                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SlcPinyin.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -331,7 +327,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof NoConnectionError)
-                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SlcPinyin.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                     }
                 });
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jObjReq);
@@ -352,7 +348,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 pageContents.add(pageContent);
             }
 
-            customSwipeAdapter = new CustomSwipeAdapter(Slc.this, 1, pageContents, parentEndpoint);
+            customSwipeAdapter = new CustomSwipeAdapter(SlcPinyin.this, 1, pageContents, parentEndpoint);
             mViewPager.setAdapter(customSwipeAdapter);
             mViewPager.setCurrentItem(0, true);//set Current page
         } catch (JSONException e) {
@@ -396,7 +392,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof NoConnectionError)
-                            Toast.makeText(Slc.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SlcPinyin.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -417,7 +413,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
                 PageContent pageContent = new PageContent(pinyin, engword, cnchar, sound);
                 pageContents.add(pageContent);
             }
-            customSwipeAdapter = new CustomSwipeAdapter(Slc.this, temp.size(), pageContents, parentEndpoint);
+            customSwipeAdapter = new CustomSwipeAdapter(SlcPinyin.this, temp.size(), pageContents, parentEndpoint);
             mViewPager.setAdapter(customSwipeAdapter);
 
             //set Current page

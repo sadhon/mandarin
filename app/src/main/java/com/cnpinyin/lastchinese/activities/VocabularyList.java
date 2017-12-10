@@ -28,6 +28,7 @@ import com.cnpinyin.lastchinese.singleton.MySingleton;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class VocabularyList extends AppCompatActivity
     private HashMap<String, String> parentItemToParentEndPoint = new HashMap<>();
     private HashMap<String, String> slcItemToChildEndPoint = new HashMap<>();
     private int lastExpandedPosition = -1;
-    VocDatabaseAdapter vocDbAdapter= null;
+    VocDatabaseAdapter vocDbAdapter = null;
     HashMap<String, List<String>> childListUnderVocItem;
     List<String> vocabularyList;
 
@@ -85,10 +86,13 @@ public class VocabularyList extends AppCompatActivity
         for (int i = 0; i < vocabularyList.size() - 1; i++) {
             childListUnderVocItem.put(vocabularyList.get(i), new ArrayList<String>());
         }
-        //setting Single Character List default as it is static
+
+        //setting Single Character List by default as it is static
         childListUnderVocItem.put(vocabularyList.get(vocabularyList.size() - 1), sclChildItemList);
         adapter = new ExpandableListAdapter(vocabularyList, childListUnderVocItem, getApplicationContext());
         exp_listview.setAdapter(adapter);
+
+        //Allow only one parent(Group) to show its children at a time
         exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
             public void onGroupExpand(int groupPosition) {
@@ -100,87 +104,52 @@ public class VocabularyList extends AppCompatActivity
             }
         });
 
+        //control parent(Group) item click
         exp_listview.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
                 final String parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
 
-                final String server_url = AllConstans.SERVER_BASE_URL +  "by=" + parentEndPoint;
-
+                final String server_url = AllConstans.SERVER_BASE_URL + "by=" + parentEndPoint;
+                ///bct has no child
+                //so if parent is bct then then fetch size from server and go for next page
                 if (parentEndPoint.equalsIgnoreCase("bct")) {
 
-                    //get size from size request and start new activity
-                    JsonArrayRequest sizeReq = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
-                                    try {
-                                        JSONObject sizeContainingObj = response.getJSONObject(0);
-                                        String stringSize = sizeContainingObj.getString("size");
-                                        int intSize = Integer.parseInt(stringSize);
+                    if(vocDbAdapter.hasRow(server_url))
+                    {
+                        String responseText = vocDbAdapter.getData(server_url);
+                        try {
+                            JSONArray response = new JSONArray(responseText);
+                            startNewPageWithResponse(response, parentEndPoint, "BCT");
 
-                                        Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
-                                        intent.putExtra("parentEndPoint", parentEndPoint);
-                                        intent.putExtra("pageTitle", "BCT");
-                                        intent.putExtra("contentSize", intSize);
-                                        startActivity(intent);
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            },
-
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    if (error instanceof NoConnectionError)
-                                    Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                    MySingleton.getInstance(getApplicationContext()).addToRequestQueue(sizeReq);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        //fetch data from read server and show for the first time
+                        getSizeAndStartNewPage(server_url, parentEndPoint, "BCT");
+                    }
 
                 } else {
 
+
+
                     if (parent.isGroupExpanded(groupPosition)) {
                         exp_listview.collapseGroup(groupPosition);
-                    } else {
+                    } else
+                    {
                         int childItemsNumber = childListUnderVocItem.get(vocabularyList.get(groupPosition)).size();
                         if (parentEndPoint.equals("sc") && childItemsNumber > 0) {
                             provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
                         } else {
 
 
-                            Toast.makeText(VocabularyList.this, "" + vocDbAdapter.getData(server_url), Toast.LENGTH_SHORT).show();
-
-
                             //fetch json data for the firs time...
-                            JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
-                                    new Response.Listener<JSONArray>() {
-                                        @Override
-                                        public void onResponse(JSONArray response) {
-                                            //shows the respective children against certain groupPosition
-                                            showChildValues(response,groupPosition, parentEndPoint);
-                                            //save json response as string against respective url
-                                            vocDbAdapter.insertData(server_url, response.toString());
-                                        }
-                                    },
-                                    new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            if (error instanceof NoConnectionError)
-                                                Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                            );
-                            MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
 
-
-/*                            if(vocDbAdapter.hasRow(server_url))
-                            {
+                            if (vocDbAdapter.hasRow(server_url)) {
 
                                 String server_data = vocDbAdapter.getData(server_url);
-                                JSONArray response= null;
+                                JSONArray response = null;
                                 try {
                                     response = new JSONArray(server_data);
                                 } catch (JSONException e) {
@@ -188,10 +157,28 @@ public class VocabularyList extends AppCompatActivity
                                 }
 
                                 showChildValues(response, groupPosition, parentEndPoint);
+                            } else
+                            {
+                                JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                                        new Response.Listener<JSONArray>() {
+                                            @Override
+                                            public void onResponse(JSONArray response) {
+                                                //shows the respective children against certain groupPosition
+                                                showChildValues(response, groupPosition, parentEndPoint);
+                                                //save json response as string against respective url
+                                                vocDbAdapter.insertData(server_url, response.toString());
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                if (error instanceof NoConnectionError)
+                                                    Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                );
+                                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArray);
                             }
-                            else {
-
-                            }*/
                         }
                     }
                 }
@@ -209,11 +196,55 @@ public class VocabularyList extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void getSizeAndStartNewPage(final String server_url, final String parentEndPoint, final String pageTitle) {
+        //get size from size request and start new activity
+        JsonArrayRequest sizeReq = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        startNewPageWithResponse(response, parentEndPoint, pageTitle);
+
+                        //save bct data to lovsl database
+                        vocDbAdapter.insertData(server_url, response.toString());
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof NoConnectionError)
+                            Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(sizeReq);
+
+    }
+
+    private void startNewPageWithResponse(JSONArray response, String parentEndPoint, String pageTitle) {
+        try {
+            JSONObject sizeContainingObj = response.getJSONObject(0);
+            String stringSize = sizeContainingObj.getString("size");
+            int intSize = Integer.parseInt(stringSize);
+
+            Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
+            intent.putExtra("parentEndPoint", parentEndPoint);
+            intent.putExtra("pageTitle", pageTitle);
+            intent.putExtra("contentSize", intSize);
+            startActivity(intent);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void showChildValues(JSONArray response, int groupPosition, String parentEndPoint) {
 
-        List<String> childValueList = new ArrayList<String>();
+        List<String> childValueList = new ArrayList<>();
         final List<Integer> childSizeList = new ArrayList<>();
-        List<String> keysList = new ArrayList<String>();
+        List<String> keysList = new ArrayList<>();
+        String vocListItem = vocabularyList.get(groupPosition);
+        childListUnderVocItem.put(vocListItem, childValueList);
 
         try {
             JSONObject firstJSONObject = response.getJSONObject(0);
@@ -225,6 +256,7 @@ public class VocabularyList extends AppCompatActivity
             String childValue;
             int childSizeValue;
             for (int i = 0; i < response.length(); i++) {
+
                 JSONObject singleObj = response.getJSONObject(i);
 
                 /* Determining  single childEndPoint value and size
@@ -242,11 +274,12 @@ public class VocabularyList extends AppCompatActivity
                 childSizeList.add(childSizeValue);
             }
 
-            String vocListItem = vocabularyList.get(groupPosition);
+
             childListUnderVocItem.put(vocListItem, childValueList);
             adapter.update(childListUnderVocItem);
             adapter.notifyDataSetChanged();
-            exp_listview.expandGroup(groupPosition);
+            // exp_listview.expandGroup(groupPosition);
+
             provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, childSizeList);
 
         } catch (Exception e) {
@@ -269,50 +302,33 @@ public class VocabularyList extends AppCompatActivity
                     intent.putExtra("pageTitle", childValue);
                     intent.putExtra("contentSize", childSize);
                     startActivity(intent);
-
-
-
-
-                } else {
+                }
+                else
+                {
                     String slcItem = childValue;
                     if (slcItem.equalsIgnoreCase("By Range")) {
+
                         //Fetching size for Range And go to next activity
-                        //String url = AllConstans.SERVER_VOC_URL + "sc";
-                        final String url = AllConstans.SERVER_BASE_URL + "by=sc-range";
+                        final String server_url = AllConstans.SERVER_BASE_URL + "by=sc-range";
+                        if(vocDbAdapter.hasRow(server_url))
+                        {
+                            String responseText = vocDbAdapter.getData(server_url);
+                            try {
+                                JSONArray response = new JSONArray(responseText);
+                                startNewPageWithResponse(response, parentEndPoint, "By Range");
 
-                        JsonArrayRequest objectRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
-                                new Response.Listener<JSONArray>() {
-                                    @Override
-                                    public void onResponse(JSONArray response) {
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }else {
+                            //fetch data from read server and show for the first time
+                            getSizeAndStartNewPage(server_url, parentEndPoint, "By Range");
+                        }
 
-                                        try {
-                                            JSONObject rangeContainingObj =  response.getJSONObject(0);
 
-                                            int size = rangeContainingObj.getInt("size");
-                                            Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
-                                            intent.putExtra("parentEndPoint", parentEndPoint);
-                                            intent.putExtra("pageTitle", "By Range");
-                                            intent.putExtra("contentSize", size);
-
-                                            startActivity(intent);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                },
-                                new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        if (error instanceof NoConnectionError)
-                                            Toast.makeText(VocabularyList.this, "Unable to connect to the server! Please ensure your internet is working!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                        );
-                        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(objectRequest);
                     } else {
                         //change childvalue to childEndPoint
                         String childEndPoint = slcItemToChildEndPoint.get(slcItem);
-
                         Intent intent = new Intent(getApplicationContext(), Slc.class);
                         intent.putExtra("parentEndPoint", parentEndPoint);
                         intent.putExtra("childEndPoint", childEndPoint);

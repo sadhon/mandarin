@@ -40,6 +40,9 @@
             android:name=".activities.Slc"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.SlcPinyin"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.ProductLIst" />
@@ -47,7 +50,9 @@
             android:name=".activities.SentencesAndDialogue"
             android:label="Sentences And Dialogues" />
         <activity android:name=".activities.SentencePageSlider" />
-        <activity android:name=".activities.DbTest"></activity>
+        <activity android:name=".activities.DbTest">
+
+        </activity>
     </application>
 
 </manifest>
