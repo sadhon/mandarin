@@ -45,6 +45,10 @@ public class VocabularyList extends AppCompatActivity
     VocDatabaseAdapter vocDbAdapter = null;
     HashMap<String, List<String>> childListUnderVocItem;
     List<String> vocabularyList;
+    String parentEndPoint;
+    String server_url;
+
+
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -60,6 +64,7 @@ public class VocabularyList extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         exp_listview = (ExpandableListView) findViewById(R.id.expnadable_listview);
         setSupportActionBar(toolbar);
+
         parentItemToParentEndPoint.put("By Topics Part 1", "topic");
         parentItemToParentEndPoint.put("By Topics Part 2", "topic2");
         parentItemToParentEndPoint.put("By Topics Part3 + Image", "topic3");
@@ -76,10 +81,13 @@ public class VocabularyList extends AppCompatActivity
 
         //for working with sqlite
         vocDbAdapter = new VocDatabaseAdapter(VocabularyList.this);
-        final String[] sclChildItems = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
+
         String[] vocabularyItems = getResources().getStringArray(R.array.heading_items);
-        ArrayList<String> sclChildItemList = new ArrayList<>(Arrays.asList(sclChildItems));
         vocabularyList = new ArrayList<String>(Arrays.asList(vocabularyItems));
+
+        final String[] sclChildItems = {"By Range", "By Radical", "By Stroke No", "By Pinyin"};
+        ArrayList<String> sclChildItemList = new ArrayList<>(Arrays.asList(sclChildItems));
+
         childListUnderVocItem = new HashMap<>();
 
         //FirstLy set all childList empty except the Last
@@ -109,77 +117,43 @@ public class VocabularyList extends AppCompatActivity
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, final long id) {
 
-
-                final String parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
-                final String server_url = AllConstans.SERVER_BASE_URL + "by=" + parentEndPoint;
+                parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
+                server_url = AllConstans.SERVER_BASE_URL + "by=" + parentEndPoint;
 
                 ///bct has no child
                 //so if parent is bct then then fetch size from server and go for next page
                 if (parentEndPoint.equalsIgnoreCase("bct")) {
-                    if(vocDbAdapter.hasRow(server_url))
-                    {
+                    if (vocDbAdapter.hasRow(server_url)) {
                         String responseText = vocDbAdapter.getData(server_url);
                         try {
                             JSONArray response = new JSONArray(responseText);
-                            startNewPageWithResponse(response, parentEndPoint, "BCT");
+                            startNewPageWithResponse(response, "BCT");
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    }else {
+                    } else {
                         //fetch data from real server and show for the first time
-                        getSizeAndStartNewPage(server_url, parentEndPoint, "BCT");
+                        getSizeAndStartNewPage("BCT");
                     }
-
                 } else {
-
-                    //Except bct all the parent(heading or group) items has child
-                    //previous expanded group will be collapsed if any parent is clicked
-
-           /*         if (parent.isGroupExpanded(groupPosition)) {
-                        exp_listview.collapseGroup(groupPosition);
-                    } else
-                    {*/
-
-
-
-                        //except bct all parent has children
-                    //and they controlled from this else block
-
-                        int childItemsNumber = childListUnderVocItem.get(vocabularyList.get(groupPosition)).size();
-                        if (parentEndPoint.equals("sc") && childItemsNumber > 0) {
-                            provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
+                    //Except bct all the parent(heading or group) items have children
+                    int childItemsNumber = childListUnderVocItem.get(vocabularyList.get(groupPosition)).size();
+                    if (parentEndPoint.equals("sc") && childItemsNumber > 0) {
+                        provideParamsAtChildClick(vocabularyList, childListUnderVocItem, new ArrayList<Integer>());
+                    } else {
+                        if (!vocDbAdapter.hasRow(server_url)) {
+                            fetchFrmSrvrAndShowChilds(groupPosition);
                         } else {
-                            //fetch json data for the firs time...
-                            if (vocDbAdapter.hasRow(server_url)) {
-                                String server_data = vocDbAdapter.getData(server_url);
-                                JSONArray response = null;
-                                try {
-                                    response = new JSONArray(server_data);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                showChildValues(response, groupPosition, parentEndPoint);
-                            } else
-                            {
-                                if(vocDbAdapter.hasRow(server_url))
-                                {
-                                    String responseTxt = vocDbAdapter.getData(server_url);
-                                    try {
-                                        JSONArray response = new JSONArray(responseTxt);
-                                        showChildValues(response, groupPosition, parentEndPoint);
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }else
-                                {
-                                    fetchFrmSrvrAndShowChilds(server_url, parentEndPoint, groupPosition);
-                                }
+                            String responseTxt = vocDbAdapter.getData(server_url);
+                            try {
+                                JSONArray response = new JSONArray(responseTxt);
+                                showChildValues(response, groupPosition);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         }
-                    //}
+                    }
                 }
                 return false;
             }
@@ -196,13 +170,13 @@ public class VocabularyList extends AppCompatActivity
     }
 
 
-    private void fetchFrmSrvrAndShowChilds(final String server_url,final String parentEndPoint, final int groupPosition) {
+    private void fetchFrmSrvrAndShowChilds(final int groupPosition) {
         JsonArrayRequest jsonArray = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         //shows the respective children against certain groupPosition
-                        showChildValues(response, groupPosition, parentEndPoint);
+                        showChildValues(response, groupPosition);
                         //save json response as string against respective url
                         vocDbAdapter.insertData(server_url, response.toString());
                     }
@@ -219,13 +193,13 @@ public class VocabularyList extends AppCompatActivity
     }
 
 
-    private void getSizeAndStartNewPage(final String server_url, final String parentEndPoint, final String pageTitle) {
+    private void getSizeAndStartNewPage(final String pageTitle) {
         //get size from size request and start new activity
         JsonArrayRequest sizeReq = new JsonArrayRequest(Request.Method.GET, server_url, (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        startNewPageWithResponse(response, parentEndPoint, pageTitle);
+                        startNewPageWithResponse(response, pageTitle);
 
                         //save bct data to lovsl database
                         vocDbAdapter.insertData(server_url, response.toString());
@@ -243,7 +217,7 @@ public class VocabularyList extends AppCompatActivity
 
     }
 
-    private void startNewPageWithResponse(JSONArray response, String parentEndPoint, String pageTitle) {
+    private void startNewPageWithResponse(JSONArray response, String pageTitle) {
         try {
             JSONObject sizeContainingObj = response.getJSONObject(0);
             String stringSize = sizeContainingObj.getString("size");
@@ -261,7 +235,7 @@ public class VocabularyList extends AppCompatActivity
     }
 
 
-    private void showChildValues(JSONArray response, int groupPosition, String parentEndPoint) {
+    private void showChildValues(JSONArray response, int groupPosition) {
 
         List<String> childValueList = new ArrayList<>();
         final List<Integer> childSizeList = new ArrayList<>();
@@ -297,13 +271,11 @@ public class VocabularyList extends AppCompatActivity
                 childSizeList.add(childSizeValue);
             }
 
-
             childListUnderVocItem.put(vocListItem, childValueList);
             adapter.update(childListUnderVocItem);
             adapter.notifyDataSetChanged();
-            // exp_listview.expandGroup(groupPosition);
 
-            provideParamsAtChildClick(parentEndPoint, vocabularyList, childListUnderVocItem, childSizeList);
+            provideParamsAtChildClick(vocabularyList, childListUnderVocItem, childSizeList);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -311,7 +283,7 @@ public class VocabularyList extends AppCompatActivity
         }
     }
 
-    private void provideParamsAtChildClick(final String parentEndPoint, final List<String> vocabularyList, final HashMap<String, List<String>> childListUnderVocItem, final List<Integer> childSizeList) {
+    private void provideParamsAtChildClick(final List<String> vocabularyList, final HashMap<String, List<String>> childListUnderVocItem, final List<Integer> childSizeList) {
 
         exp_listview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
@@ -319,36 +291,32 @@ public class VocabularyList extends AppCompatActivity
                 String childValue = childListUnderVocItem.get(vocabularyList.get(groupPosition))
                         .get(childPosition);
                 if (!parentEndPoint.equalsIgnoreCase("sc")) {
+
                     int childSize = childSizeList.get(childPosition);
                     Intent intent = new Intent(getApplicationContext(), ViewPagerSlider.class);
                     intent.putExtra("parentEndPoint", parentEndPoint);
                     intent.putExtra("pageTitle", childValue);
                     intent.putExtra("contentSize", childSize);
                     startActivity(intent);
-                }
-                else
-                {
+                } else {
                     String slcItem = childValue;
                     if (slcItem.equalsIgnoreCase("By Range")) {
 
                         //Fetching size for Range And go to next activity
-                        final String server_url = AllConstans.SERVER_BASE_URL + "by=sc-range";
-                        if(vocDbAdapter.hasRow(server_url))
-                        {
+                        server_url = AllConstans.SERVER_BASE_URL + "by=sc-range";
+                        if (vocDbAdapter.hasRow(server_url)) {
                             String responseText = vocDbAdapter.getData(server_url);
                             try {
                                 JSONArray response = new JSONArray(responseText);
-                                startNewPageWithResponse(response, parentEndPoint, "By Range");
+                                startNewPageWithResponse(response, "By Range");
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        }else {
+                        } else {
                             //fetch data from read server and show for the first time
-                            getSizeAndStartNewPage(server_url, parentEndPoint, "By Range");
+                            getSizeAndStartNewPage("By Range");
                         }
-
-
                     } else {
                         //change childvalue to childEndPoint
                         String childEndPoint = slcItemToChildEndPoint.get(slcItem);

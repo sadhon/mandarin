@@ -1,5 +1,7 @@
 package com.cnpinyin.lastchinese.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,10 +48,12 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
     private CustomSwipeAdapter customSwipeAdapter;
     private Spinner spinner;
     private int size;
+    TextView contentLoadingtxt;
     private ArrayList<String> ranges = new ArrayList<>();
     private VocDatabaseAdapter voDbHelper = null;
     String parentEndPoint;
     String url;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,8 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         mViewPager = (android.support.v4.view.ViewPager) findViewById(R.id.container);
         Button prev = (Button) findViewById(R.id.btn_next);
         Button next = (Button) findViewById(R.id.btn_prev);
+        contentLoadingtxt = (TextView) findViewById(R.id.loading_txt);
+
 
         voDbHelper = new VocDatabaseAdapter(this);
 
@@ -88,6 +95,11 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                // Initially hide the content view.
+                mViewPager.setVisibility(View.GONE);
+                contentLoadingtxt.setVisibility(View.VISIBLE);
+
                 int min = getRangeMinimumValue();
 
                 //determining page index
@@ -172,6 +184,10 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
 
 
     private void showPageData(JSONArray response, String parentEndPoint,  int currentPageIndex) {
+
+
+        mViewPager.setVisibility(View.VISIBLE);
+        contentLoadingtxt.setVisibility(View.GONE);
 
         ArrayList<PageContent> pageContents = new ArrayList<>();
         try {
@@ -298,4 +314,6 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         min = Integer.valueOf(matcher.group());
         return min;
     }
+
+
 }

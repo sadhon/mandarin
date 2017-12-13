@@ -79,5 +79,6 @@
     <string name="vocabularylist">Vocabulary List</string>
     <string name="senterces_dialogue"><![CDATA[Sentense & Dialogues]]></string>
     <string name="nextpage"><![CDATA[>]]></string>
+    <string name="downloading">downloading...</string>
 
 </resources>

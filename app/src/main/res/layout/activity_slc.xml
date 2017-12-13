@@ -85,6 +85,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
+    <TextView
+        android:id="@+id/loading_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/downloading"
+        />
+
     <Button
         android:id="@+id/btn_prev"
         android:layout_width="wrap_content"

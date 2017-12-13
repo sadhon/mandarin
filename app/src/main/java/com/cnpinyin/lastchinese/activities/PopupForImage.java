@@ -66,7 +66,6 @@ public class PopupForImage extends AppCompatActivity {
             cnchars.add(cnchar.substring(i, i + 1));
         }
 
-
         if (cnchars.size() == 1) {
             prev.setVisibility(View.GONE);
             next.setVisibility(View.GONE);

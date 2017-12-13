@@ -48,6 +48,8 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
     String childEndPoint;
     String urlForMainSpinnerItems = "";
     VocDatabaseAdapter vocDbAdapter = null;
+    TextView contentLoadingtxt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
         mainSpinner = (Spinner) findViewById(R.id.main_spinner);
         subSpinner = (Spinner) findViewById(R.id.sub_spinner);
         TextView mainSpinnerTitle = (TextView) findViewById(R.id.main_spinner_title);
+        contentLoadingtxt = (TextView) findViewById(R.id.loading_txt);
         mViewPager = (CustomViewPager) findViewById(R.id.container);
         Button btnNext = (Button) findViewById(R.id.btn_prev);
         Button btnPrev = (Button) findViewById(R.id.btn_next);
@@ -317,6 +320,12 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
 
 
     private void setPinyinPageItems(final String urlForPageItems) {
+
+
+        // Initially hide the content (mViewPager) view and show downloading...
+        mViewPager.setVisibility(View.GONE);
+        contentLoadingtxt.setVisibility(View.VISIBLE);
+
         JsonArrayRequest jObjReq = new JsonArrayRequest(Request.Method.GET, urlForPageItems, (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -338,6 +347,11 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void showPinyinPage(JSONArray response) {
+
+        // show the content (mViewPager) view and hide (downloading...) txt
+        mViewPager.setVisibility(View.VISIBLE);
+        contentLoadingtxt.setVisibility(View.GONE);
+
         try {
             //JSONArray jsonArray = response.getJSONArray("content");
             String cnchar, pinyin, engword, sound;
@@ -379,6 +393,11 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
 
 
     private void fetchScPageData(final String url, final int currentPageIndex) {
+
+        // Initially hide the content (mViewPager) view and show downloading...
+        mViewPager.setVisibility(View.GONE);
+        contentLoadingtxt.setVisibility(View.VISIBLE);
+
         JsonArrayRequest arrayRequest = new JsonArrayRequest(Request.Method.GET, url, (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -404,6 +423,10 @@ public class Slc extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void showScPageDataExctpPin(JSONArray response, int currentPageIndex) {
+        // show the mViewPager and hide contentDownloadingtxt
+        mViewPager.setVisibility(View.VISIBLE);
+        contentLoadingtxt.setVisibility(View.GONE);
+
         try {
             // JSONArray jsonArray = response.getJSONArray("content");
             String cnchar, pinyin, engword, sound;

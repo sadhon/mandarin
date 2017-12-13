@@ -122,7 +122,7 @@ public class VocDatabaseAdapter {
         private static final String ID="_id";
         private static final String URL="Url";
         private static final String JSON_DATA="JsonData";
-        private static final int DATABASE_VERSION = 8;
+        private static final int DATABASE_VERSION = 12;
         private static final String CREATE_TABLE = "CREATE TABLE "+ VocHelper.TABLE_NAME+
                 " ("+ VocHelper.ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ VocHelper.URL+
                 " VARCHAR(255), "+ VocHelper.JSON_DATA+" TEXT);";
