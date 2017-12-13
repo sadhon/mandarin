@@ -66,12 +66,29 @@ public class PopupForImage extends AppCompatActivity {
             cnchars.add(cnchar.substring(i, i + 1));
         }
 
-        if (cnchars.size() == 1) {
+        if (savedInstanceState != null) {
+            indexOfImageFile = savedInstanceState.getInt("indx");
+        }
+
+        //controlling prev and next btn visibility
+        int numOfImg = cnchars.size();
+        int lastIndxOfImg = numOfImg - 1;
+
+        if (numOfImg == 1) {
             prev.setVisibility(View.GONE);
             next.setVisibility(View.GONE);
-        } else {
+
+        }else if(indexOfImageFile == 0){
             prev.setVisibility(View.GONE);
             next.setVisibility(View.VISIBLE);
+
+        }else if (indexOfImageFile > 0 && indexOfImageFile < lastIndxOfImg) {
+            prev.setVisibility(View.VISIBLE);
+            next.setVisibility(View.VISIBLE);
+
+        }  else if (indexOfImageFile == lastIndxOfImg) {
+            prev.setVisibility(View.VISIBLE);
+            next.setVisibility(View.GONE);
         }
 
         cross.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +98,7 @@ public class PopupForImage extends AppCompatActivity {
             }
         });
 
-        //show first gif when startActivity
+        //show first gif when
         showImage(indexOfImageFile);
 
         prev.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +133,14 @@ public class PopupForImage extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("indx", indexOfImageFile);
+    }
+
 
     private void showImage(int indexOfImageFile) {
         String fileName = cnchars.get(indexOfImageFile);
