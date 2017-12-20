@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="40dp"
     android:ellipsize="marquee"
-    android:background="#ebebec"
+    android:background="#a5a5f1"
     android:text="hello"
     android:textSize="16sp"
-    android:textColor="#aa66cc"/>
+    android:textColor="#a8a7a9"/>

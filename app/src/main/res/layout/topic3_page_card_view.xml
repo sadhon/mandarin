@@ -138,7 +138,7 @@
         <ImageView
             android:id="@+id/dottet_line"
             android:layout_width="0dp"
-            android:layout_height="3dp"
+            android:layout_height="1dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/dottet"
             app:layout_constraintEnd_toEndOf="parent"
