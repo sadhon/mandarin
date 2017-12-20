@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="#EEEEEE"
+    android:background="#eae8e8"
     tools:context="com.cnpinyin.lastchinese.activities.ViewPagerSlider">
 
     <android.support.design.widget.AppBarLayout
@@ -54,8 +54,6 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="#EEEEEE"
-        android:padding="10dp"
         android:layout_below="@id/appbar"
         android:layout_marginBottom="40dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

@@ -30,7 +30,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
     private ArrayList<PageContent> pageContents;
     private Context ctx;
-    MediaPlayer mediaPlayer = null;
+    private MediaPlayer mediaPlayer = null;
 
     PageRecyclerViewAdapter(Context ctx, ArrayList<PageContent> pageContents) {
         this.pageContents = pageContents;
@@ -66,6 +66,7 @@ public class PageRecyclerViewAdapter extends RecyclerView.Adapter<PageRecyclerVi
 
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
                 try {
                     String query = URLEncoder.encode(pageContents.get(position).getSoundfile(), "utf-8");
                     String url = AllConstans.SERVER_BASE_SOUND_URL + query;

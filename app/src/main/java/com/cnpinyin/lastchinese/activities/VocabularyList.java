@@ -1,5 +1,8 @@
 package com.cnpinyin.lastchinese.activities;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -47,8 +50,14 @@ public class VocabularyList extends AppCompatActivity
     List<String> vocabularyList;
     String parentEndPoint;
     String server_url;
+    int latestGroupPosition = -1;
 
-
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -56,9 +65,23 @@ public class VocabularyList extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("groupPosition", latestGroupPosition);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vocabulary_list);
+
+        if(isNetworkAvailable())
+        {
+           // Toast.makeText(this, "available....", Toast.LENGTH_SHORT).show();
+        }else {
+           // Toast.makeText(this, "not available....", Toast.LENGTH_SHORT).show();
+        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -100,6 +123,24 @@ public class VocabularyList extends AppCompatActivity
         adapter = new ExpandableListAdapter(vocabularyList, childListUnderVocItem, getApplicationContext());
         exp_listview.setAdapter(adapter);
 
+
+        if(savedInstanceState != null )
+        {
+            latestGroupPosition = savedInstanceState.getInt("groupPosition");
+            if(exp_listview.isGroupExpanded(latestGroupPosition))
+            {
+
+                Toast.makeText(this, "" + latestGroupPosition, Toast.LENGTH_SHORT).show();
+            }else {
+
+                exp_listview.collapseGroup(latestGroupPosition);
+                Toast.makeText(this, "not expanded" + latestGroupPosition, Toast.LENGTH_SHORT).show();
+            }
+
+        }else {
+            Toast.makeText(this, "fails" + latestGroupPosition, Toast.LENGTH_SHORT).show();
+        }
+
         //Allow only one parent(Group) to show its children at a time
         exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
@@ -119,6 +160,10 @@ public class VocabularyList extends AppCompatActivity
 
                 parentEndPoint = parentItemToParentEndPoint.get(vocabularyList.get(groupPosition));
                 server_url = AllConstans.SERVER_BASE_URL + "by=" + parentEndPoint;
+
+                latestGroupPosition = groupPosition;
+
+                Toast.makeText(VocabularyList.this, "" + latestGroupPosition, Toast.LENGTH_SHORT).show();
 
                 ///bct has no child
                 //so if parent is bct then then fetch size from server and go for next page

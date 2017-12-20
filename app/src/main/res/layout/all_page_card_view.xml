@@ -1,139 +1,139 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/page_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginBottom="10dp"
-    android:orientation="vertical">
+    android:layout_marginBottom="2dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="3dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:divider="@android:color/transparent"
+    android:dividerHeight="0.0px"
+    card_view:cardElevation="1dp"
+    card_view:cardPreventCornerOverlap="false">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/page_card_view"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="5dp">
+        android:layout_height="match_parent">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFF">
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
 
-            <android.support.constraint.Guideline
-                android:id="@+id/guideline8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.35" />
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-            <android.support.constraint.Guideline
-                android:id="@+id/guideline9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5" />
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85" />
 
-            <android.support.constraint.Guideline
-                android:id="@+id/guideline10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.85" />
+        <TextView
 
-            <TextView
+            android:id="@+id/page_txt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center_horizontal"
+            android:text="TextView  jfljsdlf sdlfjlsd fsldfjsdoifsdjflsd sdlfjsdl fsdljfsd fslddfj sdlfsa dflsdjf sdlf sdfsdjf sddlf sdfos fsdfosdf sdfjsd ofsd sdof"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/pinyin_txt"
+            app:layout_constraintEnd_toStartOf="@+id/guideline8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pinyin_txt" />
 
-                android:id="@+id/page_txt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:gravity="center_horizontal"
-                android:text="TextView  jfljsdlf sdlfjlsd fsldfjsdoifsdjflsd sdlfjsdl fsdljfsd fslddfj sdlfsa dflsdjf sdlf sdfsdjf sddlf sdfos fsdfosdf sdfjsd ofsd sdof"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/pinyin_txt"
-                app:layout_constraintEnd_toStartOf="@+id/guideline8"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/pinyin_txt" />
+        <ImageView
+            android:id="@+id/writing_icon"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center_horizontal"
+            android:src="@drawable/writing_icon"
+            app:layout_constraintBottom_toBottomOf="@+id/pinyin_txt"
+            app:layout_constraintHorizontal_bias="0.545"
+            app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+            app:layout_constraintRight_toLeftOf="@+id/guideline9"
+            app:layout_constraintTop_toTopOf="@+id/pinyin_txt" />
 
-            <ImageView
-                android:id="@+id/writing_icon"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:gravity="center_horizontal"
-                android:src="@drawable/writing_icon"
-                app:layout_constraintBottom_toBottomOf="@+id/pinyin_txt"
-                app:layout_constraintHorizontal_bias="0.545"
-                app:layout_constraintLeft_toLeftOf="@+id/guideline8"
-                app:layout_constraintRight_toLeftOf="@+id/guideline9"
-                app:layout_constraintTop_toTopOf="@+id/pinyin_txt" />
+        <TextView
 
-            <TextView
+            android:id="@+id/pinyin_txt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="pinyin text This si sfor the test puld fl dsfjlsdf sdfljsdd fsdljsd sdfljsf sdsdlj sdfljdf  flsdadfj sdfsljfsd sddflsdkjf sdlkjdf sdflkkjfds fsalja sdfljsf sdusf sdlkjsdo sfj sldf 0jsd oowjsdjds sdjsd osdfo wfosdjsdoj oijdsj"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/dottet_line"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="@+id/guideline9"
+            app:layout_constraintRight_toLeftOf="@+id/guideline10"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.256" />
 
-                android:id="@+id/pinyin_txt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center_horizontal"
-                android:text="pinyin text This si sfor the test puld fl dsfjlsdf sdfljsdd fsdljsd sdfljsf sdsdlj sdfljdf  flsdadfj sdfsljfsd sddflsdkjf sdlkjdf sdflkkjfds fsalja sdfljsf sdusf sdlkjsdo sfj sldf 0jsd oowjsdjds sdjsd osdfo wfosdjsdoj oijdsj"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/dottet_line"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="@+id/guideline9"
-                app:layout_constraintRight_toLeftOf="@+id/guideline10"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.256" />
+        <ImageView
+            android:id="@+id/sound_icon"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center_horizontal"
+            android:src="@drawable/sound_icon"
+            app:layout_constraintBottom_toBottomOf="@+id/pinyin_txt"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="@+id/guideline10"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pinyin_txt" />
 
-            <ImageView
-                android:id="@+id/sound_icon"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:gravity="center_horizontal"
-                android:src="@drawable/sound_icon"
-                app:layout_constraintBottom_toBottomOf="@+id/pinyin_txt"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="@+id/guideline10"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/pinyin_txt" />
+        <TextView
 
-            <TextView
+            android:id="@+id/translation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center_horizontal"
+            android:text="Translation hel alkfjla afjlaf addfjlsd sdfjlsdf sddfjlsd dfjlssdf sdfjlsdf sddjlsdf sdfjlsdf sdljlsds sdfjlsdf sdsfjlsdf sdfjlsdf dfkjlsd sdfljlfd dsfljldsf dfljsdlf dfljdlf sdfljsdlf "
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_goneMarginTop="50dp" />
 
-                android:id="@+id/translation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:gravity="center_horizontal"
-                android:text="Translation hel alkfjla afjlaf addfjlsd sdfjlsdf sddfjlsd dfjlssdf sdfjlsdf sddjlsdf sdfjlsdf sdljlsds sdfjlsdf sdsfjlsdf sdfjlsdf dfkjlsd sdfljlfd dsfljldsf dfljsdlf dfljdlf sdfljsdlf "
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_goneMarginTop="50dp" />
+        <ImageView
+            android:id="@+id/dottet_line"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layerType="software"
+            android:src="@drawable/dottet"
+            app:layout_constraintBottom_toTopOf="@+id/translation"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:srcCompat="@drawable/cnpinyin_logo" />
 
-            <ImageView
-                android:id="@+id/dottet_line"
-                android:layout_width="0dp"
-                android:layout_height="5dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layerType="software"
-                android:src="@drawable/dottet"
-                app:layout_constraintBottom_toTopOf="@+id/translation"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:srcCompat="@drawable/cnpinyin_logo" />
-
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
-</LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
