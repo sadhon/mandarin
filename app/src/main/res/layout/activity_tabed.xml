@@ -32,6 +32,7 @@
 
             <Spinner
                 android:id="@+id/spinner"
+                android:backgroundTint="#000"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
