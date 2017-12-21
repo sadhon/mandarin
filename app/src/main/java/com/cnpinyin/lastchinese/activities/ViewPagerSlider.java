@@ -1,12 +1,12 @@
 package com.cnpinyin.lastchinese.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +60,7 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_tabed);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar headingContainer = (Toolbar) findViewById(R.id.heading_container_toolbar);
         TextView toolBarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
         spinner = (Spinner) findViewById(R.id.spinner);
         mViewPager = (android.support.v4.view.ViewPager) findViewById(R.id.container);
@@ -79,6 +79,35 @@ public class ViewPagerSlider extends AppCompatActivity implements View.OnClickLi
         parentEndPoint = intent.getStringExtra("parentEndPoint");
         size = intent.getIntExtra("contentSize", 0);
         toolBarTitle.setText(childEndPoint.toUpperCase());
+
+        //fixing page header
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View inflatedLayout= null;
+
+        if(!parentEndPoint.equals("topic3"))
+        {
+            inflatedLayout= inflater.inflate(R.layout.all_page_heading, null, false);
+
+            //set height and width for inflated layout..
+            inflatedLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+
+            headingContainer.addView(inflatedLayout);
+        }else {
+
+
+            inflatedLayout= inflater.inflate(R.layout.topic3_heading, null, false);
+
+            //set height and width for inflated layout..
+            inflatedLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+
+            headingContainer.addView(inflatedLayout);
+
+        }
+
+
+
+
         next.setOnClickListener(this);
         prev.setOnClickListener(this);
         if (childEndPoint.equalsIgnoreCase("bct") || parentEndPoint.equalsIgnoreCase("hsk") || parentEndPoint.equalsIgnoreCase("sc")) {

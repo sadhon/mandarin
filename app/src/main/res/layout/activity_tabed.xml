@@ -57,7 +57,7 @@
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbarw"
+                android:id="@+id/heading_container_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#fff"
@@ -71,11 +71,6 @@
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                <include
-                    android:id="@+id/page_content_heading"
-                    layout="@layout/all_page_heading"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 

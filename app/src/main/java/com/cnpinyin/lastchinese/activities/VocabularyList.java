@@ -123,7 +123,7 @@ public class VocabularyList extends AppCompatActivity
         adapter = new ExpandableListAdapter(vocabularyList, childListUnderVocItem, getApplicationContext());
         exp_listview.setAdapter(adapter);
 
-
+/*
         if(savedInstanceState != null )
         {
             latestGroupPosition = savedInstanceState.getInt("groupPosition");
@@ -139,7 +139,7 @@ public class VocabularyList extends AppCompatActivity
 
         }else {
             Toast.makeText(this, "fails" + latestGroupPosition, Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
         //Allow only one parent(Group) to show its children at a time
         exp_listview.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
@@ -163,7 +163,7 @@ public class VocabularyList extends AppCompatActivity
 
                 latestGroupPosition = groupPosition;
 
-                Toast.makeText(VocabularyList.this, "" + latestGroupPosition, Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(VocabularyList.this, "" + latestGroupPosition, Toast.LENGTH_SHORT).show();
 
                 ///bct has no child
                 //so if parent is bct then then fetch size from server and go for next page
